@@ -18,4 +18,19 @@ class Attendance extends Model
         'total_work',
         'has_request',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function breakTimes()
+    {
+        return $this->hasMany(BreakTime::class);
+    }
+
+    public function corrections()
+    {
+        return $this->hasMany(Correction::class);
+    }
 }
