@@ -25,6 +25,7 @@ class AttendanceDataSeeder extends Seeder
                 $start = Carbon::create($month->year, $month->month, 1);
                 $end = Carbon::create($month->year, $month->month, $month->daysInMonth);
 
+                $attendances = collect();
                 for ($date = $start->copy(); $date->lessThanOrEqualTo($end); $date->addDay()) {
                     if ($date->isWeekday()) {
                         $attendance = Attendance::create([
@@ -43,20 +44,22 @@ class AttendanceDataSeeder extends Seeder
                             'break_end' => '13:00:00',
                         ]);
 
-                        for ($j = 0; $j < 18; $j++) {
-                            $status = $j % 2 === 0 ? 'approved' : 'pending';
-                            Correction::create([
-                                'attendance_id' => $attendance->id,
-                                'user_id' => $user->id,
-                                'status' => $status,
-                                'reason' => '遅延のため' . ($j + 1),
-                            ]);
-                        }
-
-                        if ($attendance->corrections()->exists()) {
-                            $attendance->update(['has_request' => true]);
-                        }
+                        $attendances->push($attendance);
                     }
+                }
+
+                foreach ($attendances->random(min(5, $attendances->count())) as $attendance) {
+                    $statuses = ['pending', 'approved'];
+                    $reasons = ['遅延のため', '早退のため', '打刻漏れのため'];
+
+                    Correction::create([
+                        'attendance_id' => $attendance->id,
+                        'user_id' => $user->id,
+                        'status' => $statuses[array_rand($statuses)],
+                        'reason' => $reasons[array_rand($reasons)],
+                    ]);
+
+                    $attendance->update(['has_request' => true]);
                 }
             }
         }
