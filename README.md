@@ -51,7 +51,7 @@
 - name:管理者1
 - email:admin1@coachtech.com
 - password:admin1234
-
+---
 - name:管理者2
 - email:admin2@coachtech.com
 - password:admin5678
@@ -60,23 +60,23 @@
 - name:西 伶奈
 - email:reina.n@coachtech.com
 - password:abcd1234
-
+---
 - name:山田 太郎
 - email:taro.y@coachtech.com
 - password:abcd5678
-
+---
 - name:増田 一世
 - email:issei.m@coachtech.com
 - password:dcba1234
-
+---
 - name:山本 敬吉
 - email:keikichi.y@coachtech.com
 - password:dcba5678
-
+---
 - name:秋田 朋美
 - email:tomomi.a@coachtech.com
 - password:abcd4321
-
+---
 - name:中西 教夫
 - email:norio.n@coachtech.com
 - password:abcd8765
