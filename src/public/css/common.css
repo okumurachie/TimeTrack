@@ -1,0 +1,142 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: 'Inter', sans-serif;
+}
+.app {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    margin: 0 auto;
+    background-color: #f6f3f3;
+}
+img{
+    width: 100%;
+    display: block;
+}
+
+button{
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    padding: 0;
+    appearance: none;
+}
+
+.header{
+    width: 100%;
+    margin: 0 auto;
+    align-items: center;
+    background-color: #000;
+    color: #fff;
+    display: flex;
+    font-size: 16px;
+    justify-content: space-between;
+    height: 80px;
+    padding: 0 30px;
+    position: sticky;
+    z-index: var(--mer-z-index-navigation-top);
+    top: 0px;
+}
+ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.header__logo{
+    width: 330px;
+    height: fit-content;
+    vertical-align: middle;
+}
+
+.header__nav{
+    display: flex;
+}
+
+.header__nav ul{
+    display: flex;
+    align-items: center;
+}
+
+.header__nav li{
+    margin-right: 30px;
+}
+
+.header__nav li:hover{
+    font-weight: bold;
+}
+
+.header__logout{
+    color: #fff;
+    font-size: 16px;
+}
+
+.header__logout:hover{
+    font-weight: bold;
+}
+
+.btn{
+    display: block;
+    align-items: center;
+    background-color: #000000;
+    border-radius: 5px;
+    color: #fff;
+    font-weight: bold;
+    width: 100%;
+    height: 45px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.btn--big{
+    margin-top: 60px;
+    font-size: 26px;
+    height: 60px;
+}
+
+.center{
+    width: 100%;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 50px 0;
+    box-sizing: border-box;
+}
+
+.page__title{
+    font-size: 36px;
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+.label__name{
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+    margin: 30px 0 10px 0;
+}
+
+.input{
+    width: 100%;
+    height: 60px;
+    padding: 5px;
+    margin-bottom: 50px;
+    box-sizing: border-box;
+}
+
+.form__error{
+    color: #ff333f;
+    margin-top: 8px;
+}
+
+@media (min-width: 768px) and (max-width: 850px) {
+    .header__logo {
+        width: 25vw;
+    }
+}
