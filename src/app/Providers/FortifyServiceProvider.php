@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
+use App\Actions\Fortify\CustomLoginResponse;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
@@ -16,7 +17,10 @@ use Laravel\Fortify\Fortify;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Fortify\Http\Requests\LoginRequest as FortifyLoginRequest;
+use Laravel\Fortify\Contracts\LoginResponse;
+use Laravel\Fortify\Contracts\LogoutResponse as LogoutResponseContract;
 use App\Http\Requests\LoginRequest;
+use App\Http\Responses\LogoutResponse;
 use App\Models\User;
 use App\Models\Admin;
 
@@ -27,7 +31,7 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(LoginResponse::class, CustomLoginResponse::class);
     }
 
     /**
@@ -37,18 +41,27 @@ class FortifyServiceProvider extends ServiceProvider
     {
         Fortify::createUsersUsing(CreateNewUser::class);
 
-        Fortify::authenticateUsing(function ($request) {
+        Fortify::authenticateUsing(function (FortifyLoginRequest $request) {
+
+            $request->validate([
+                'email' => 'required|email',
+                'password' => 'required|min:8',
+            ]);
+
             if ($request->is('admin/*')) {
                 $admin = Admin::where('email', $request->email)->first();
                 if ($admin && Hash::check($request->password, $admin->password)) {
-                    return Auth::guard('admin')->login($admin);
+                    Auth::guard('admin')->login($admin);
+                    return $admin;
                 }
             } else {
                 $user = User::where('email', $request->email)->first();
                 if ($user && Hash::check($request->password, $user->password)) {
-                    return Auth::guard('web')->login($user);
+                    Auth::guard('web')->login($user);
+                    return $user;
                 }
             }
+            return null;
         });
         // Fortify::updateUserProfileInformationUsing(UpdateUserProfileInformation::class);
         // Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
@@ -75,6 +88,9 @@ class FortifyServiceProvider extends ServiceProvider
             return view('auth.login');
         });
 
+        Fortify::verifyEmailView(function () {
+            return view('auth.verify-email');
+        });
 
 
         RateLimiter::for('login', function (Request $request) {
@@ -83,6 +99,6 @@ class FortifyServiceProvider extends ServiceProvider
             return Limit::perMinute(10)->by($email . $request->ip());
         });
 
-        $this->app->bind(FortifyLoginRequest::class, LoginRequest::class);
+        $this->app->singleton(LogoutResponseContract::class, LogoutResponse::class);
     }
 }

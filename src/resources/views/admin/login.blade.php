@@ -6,7 +6,7 @@
 @section('content')
 
 @include('components.admin-header')
-<form action="/login" class="authenticate center" method="post">
+<form action="/admin/login" class="authenticate center" method="post">
     @csrf
     <h1 class="page__title">管理者ログイン</h1>
     <label for="mail" class="label__name">メールアドレス</label>

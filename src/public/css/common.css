@@ -58,6 +58,8 @@ ul {
 
 .header__nav{
     display: flex;
+    padding-right: 30px;
+    margin-right: 50px;
 }
 
 .header__nav ul{
@@ -67,15 +69,21 @@ ul {
 
 .header__nav li{
     margin-right: 30px;
+    color: #ffffff;
+    font-size: 24px;
 }
 
 .header__nav li:hover{
     font-weight: bold;
 }
 
+.header__nav a{
+    color: #ffffff;
+    text-decoration: none;
+}
 .header__logout{
     color: #fff;
-    font-size: 16px;
+    font-size: 24px;
 }
 
 .header__logout:hover{
