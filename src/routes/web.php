@@ -50,4 +50,5 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
 
 Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('/attendance', [UserAttendanceController::class, 'index'])->name('attendance.index');
+    Route::post('/attendance/stamp', [UserAttendanceController::class, 'stamp'])->name('attendance.stamp');
 });

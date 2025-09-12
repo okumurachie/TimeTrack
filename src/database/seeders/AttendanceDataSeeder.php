@@ -35,6 +35,7 @@ class AttendanceDataSeeder extends Seeder
                             'clock_out' => '18:00:00',
                             'total_break' => 60,
                             'total_work' => 480,
+                            'is_on_break' => false,
                             'has_request' => false,
                         ]);
 

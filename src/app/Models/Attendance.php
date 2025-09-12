@@ -16,6 +16,7 @@ class Attendance extends Model
         'clock_out',
         'total_break',
         'total_work',
+        'is_on_break',
         'has_request',
     ];
 
