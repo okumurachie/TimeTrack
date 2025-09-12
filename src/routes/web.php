@@ -42,11 +42,12 @@ Route::prefix('admin')->middleware(['auth:admin'])->group(function () {
         ->name('admin.logout');
 });
 
+//一般ユーザールート
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect()->route('attendance.index');
+})->middleware(['auth:web', 'signed'])->name('verification.verify');
 
-//仮表示用
-// Route::get('/email/verify', function () {
-//     return view('auth.verify-email'); // 置いてある場所に合わせてパスを修正
-// });
-Route::middleware(['auth:web'])->group(function () {
-    Route::get('/attendance', [UserAttendanceController::class, 'index']);
+Route::middleware(['auth:web', 'verified'])->group(function () {
+    Route::get('/attendance', [UserAttendanceController::class, 'index'])->name('attendance.index');
 });

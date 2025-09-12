@@ -9,7 +9,7 @@
 @section('content')
 
 @include('components.header')
-<form action="" class="authenticate center">
+<form action="/register" class="authenticate center" method="post">
     @csrf
     <h1 class="page__title">会員登録</h1>
     <label for="name" class="label__name">名前</label>
