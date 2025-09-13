@@ -20,6 +20,13 @@ class Attendance extends Model
         'has_request',
     ];
 
+    protected $casts = [
+        'work_date'  => 'date',
+        'clock_in'   => 'datetime:H:i:s',
+        'clock_out'  => 'datetime:H:i:s',
+        'is_on_break' => 'boolean',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

@@ -22,7 +22,7 @@ class AttendanceController extends Controller
 
         $attendance = Attendance::firstOrCreate(
             ['user_id' => $user->id, 'work_date' => $today],
-            ['in_on_break' => false],
+            ['is_on_break' => false],
         );
 
         $action = $request->input('action');
@@ -31,7 +31,7 @@ class AttendanceController extends Controller
             case 'clock_in';
                 if (!$attendance->clock_in) {
                     $attendance->update(['clock_in' => now()->format('H:i:s')]);
-                    return back();
+                    return back()->with('success', '出勤打刻しました');
                 }
                 break;
 
@@ -42,7 +42,7 @@ class AttendanceController extends Controller
                         'attendance_id' => $attendance->id,
                         'break_start' => now()->format('H:i:s'),
                     ]);
-                    return back();
+                    return back()->with('success', '休憩開始しました');
                 }
                 break;
 
@@ -53,7 +53,7 @@ class AttendanceController extends Controller
                     if ($lastBreak && !$lastBreak->break_end) {
                         $lastBreak->update(['break_end' => now()->format('H:i:s')]);
                     }
-                    return back();
+                    return back()->with('success', '休憩終了しました');
                 }
                 break;
 
@@ -66,8 +66,20 @@ class AttendanceController extends Controller
                             $lastBreak->update(['break_end' => now()->format('H:i:s')]);
                         }
                     }
+
                     $attendance->update(['clock_out' => now()->format('H:i:s')]);
-                    return back();
+
+                    $workMinutes = $attendance->clock_in->diffInMinutes($attendance->clock_out);
+
+                    $breakMinutes = $attendance->breakTimes->sum(function ($break) {
+                        return $break->break_end ? $break->break_start->diffInMinutes($break->break_end) : 0;
+                    });
+
+                    $attendance->total_work = $workMinutes - $breakMinutes;
+                    $attendance->total_break = $breakMinutes;
+                    $attendance->save();
+
+                    return back()->with('success', '退勤打刻しました');
                 }
                 break;
 
