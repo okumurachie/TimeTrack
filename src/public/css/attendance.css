@@ -92,3 +92,8 @@
     font-size: 26px;
     font-weight: 700;
 }
+
+.alert alert-danger{
+    color: #ff333f;
+    margin-top: 8px;
+}

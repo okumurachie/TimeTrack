@@ -6,14 +6,7 @@
 <link rel="stylesheet" href="{{ asset('css/attendance.css') }}">
 @endsection
 
-
 @section('content')
-
-@php
-$todayAttendance = optional(auth()->user())->attendances()
-->whereDate('work_date', now()->toDateString())
-->first();
-@endphp
 
 @if($todayAttendance && $todayAttendance->clock_out)
 @include('components.header_after_clock_out')
@@ -22,11 +15,6 @@ $todayAttendance = optional(auth()->user())->attendances()
 @endif
 
 <div class="app">
-    @if (session('message'))
-    <div class="alert alert-success">
-        {{ session('message') }}
-    </div>
-    @endif
     @if(session('error'))
     <div class="alert alert-danger">
         {{ session('error') }}

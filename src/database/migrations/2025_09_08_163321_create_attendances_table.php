@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->date('work_date');
-            $table->time('clock_in')->nullable();
-            $table->time('clock_out')->nullable();
+            $table->datetime('clock_in')->nullable();
+            $table->datetime('clock_out')->nullable();
             $table->integer('total_break')->default(0);
             $table->integer('total_work')->default(0);
             $table->boolean('is_on_break')->default(false);

@@ -12,7 +12,14 @@ class AttendanceController extends Controller
 {
     public function index()
     {
-        return view('attendance');
+        $user = Auth::user();
+        $today = now()->toDateString();
+
+        $todayAttendance = Attendance::where('user_id', $user->id)
+            ->where('work_date', $today)
+            ->first();
+
+        return view('attendance', compact('todayAttendance'));
     }
 
     public function stamp(Request $request)
@@ -30,8 +37,8 @@ class AttendanceController extends Controller
         switch ($action) {
             case 'clock_in';
                 if (!$attendance->clock_in) {
-                    $attendance->update(['clock_in' => now()->format('H:i:s')]);
-                    return back()->with('success', '出勤打刻しました');
+                    $attendance->update(['clock_in' => now()]);
+                    return redirect()->route('attendance.index');
                 }
                 break;
 
@@ -40,9 +47,9 @@ class AttendanceController extends Controller
                     $attendance->update(['is_on_break' => true]);
                     BreakTime::create([
                         'attendance_id' => $attendance->id,
-                        'break_start' => now()->format('H:i:s'),
+                        'break_start' => now(),
                     ]);
-                    return back()->with('success', '休憩開始しました');
+                    return redirect()->route('attendance.index');
                 }
                 break;
 
@@ -51,9 +58,9 @@ class AttendanceController extends Controller
                     $attendance->update(['is_on_break' => false]);
                     $lastBreak = $attendance->breakTimes()->latest()->first();
                     if ($lastBreak && !$lastBreak->break_end) {
-                        $lastBreak->update(['break_end' => now()->format('H:i:s')]);
+                        $lastBreak->update(['break_end' => now()]);
                     }
-                    return back()->with('success', '休憩終了しました');
+                    return redirect()->route('attendance.index');
                 }
                 break;
 
@@ -63,11 +70,11 @@ class AttendanceController extends Controller
                         $attendance->update(['is_on_break' => false]);
                         $lastBreak = $attendance->brakeTimes()->latest()->first();
                         if ($lastBreak && !$lastBreak->break_end) {
-                            $lastBreak->update(['break_end' => now()->format('H:i:s')]);
+                            $lastBreak->update(['break_end' => now()]);
                         }
                     }
 
-                    $attendance->update(['clock_out' => now()->format('H:i:s')]);
+                    $attendance->update(['clock_out' => now()]);
 
                     $workMinutes = $attendance->clock_in->diffInMinutes($attendance->clock_out);
 
@@ -79,13 +86,20 @@ class AttendanceController extends Controller
                     $attendance->total_break = $breakMinutes;
                     $attendance->save();
 
-                    return back()->with('success', '退勤打刻しました');
+                    return redirect()->route('attendance.index');
                 }
                 break;
 
             default:
-                return back()->with('error', '無効な操作です');
+                return redirect()->route('attendance.index')->with('error', '無効な操作です');
         }
-        return back()->with('error', 'すでに打刻済みです');
+        return redirect()->route('attendance.index')->with('error', 'すでに打刻済みです');
+    }
+
+    public function showMyRecord()
+    {
+        $user = Auth::user();
+        $attendances = Attendance::find()->user_id;
+        return view('my-record', compact('attendances'));
     }
 }

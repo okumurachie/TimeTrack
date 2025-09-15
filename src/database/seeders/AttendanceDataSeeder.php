@@ -27,12 +27,15 @@ class AttendanceDataSeeder extends Seeder
 
                 $attendances = collect();
                 for ($date = $start->copy(); $date->lessThanOrEqualTo($end); $date->addDay()) {
-                    if ($date->isWeekday()) {
+                    if ($date->isWeekday() && !$date->isToday()) {
+
+                        $dateString = $date->toDateString();
+
                         $attendance = Attendance::create([
                             'user_id' => $user->id,
-                            'work_date' => $date,
-                            'clock_in' => '09:00:00',
-                            'clock_out' => '18:00:00',
+                            'work_date' => $dateString,
+                            'clock_in' => $dateString . ' 09:00:00',
+                            'clock_out' => $dateString . ' 18:00:00',
                             'total_break' => 60,
                             'total_work' => 480,
                             'is_on_break' => false,
@@ -41,15 +44,16 @@ class AttendanceDataSeeder extends Seeder
 
                         BreakTime::create([
                             'attendance_id' => $attendance->id,
-                            'break_start' => '12:00:00',
-                            'break_end' => '13:00:00',
+                            'break_start' => $dateString . ' 12:00:00',
+                            'break_end' => $dateString . ' 13:00:00',
                         ]);
 
                         $attendances->push($attendance);
                     }
                 }
 
-                foreach ($attendances->random(min(5, $attendances->count())) as $attendance) {
+                $pastAttendances = $attendances;
+                foreach ($pastAttendances->random(min(5, $pastAttendances->count())) as $attendance) {
                     $statuses = ['pending', 'approved'];
                     $reasons = ['遅延のため', '早退のため', '打刻漏れのため'];
 
