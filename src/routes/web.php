@@ -52,5 +52,5 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('/attendance', [UserAttendanceController::class, 'index'])->name('attendance.index');
     Route::post('/attendance/stamp', [UserAttendanceController::class, 'stamp'])->name('attendance.stamp');
     Route::get('/attendance/list', [UserAttendanceController::class, 'showMyRecord'])->name('my-record.list');
-    Route::get('/attendance/detail/{id}', [UserAttendanceController::class, 'detail'])->name('detail');
+    Route::get('/attendance/detail/{id}', [UserAttendanceController::class, 'detail'])->name('detail.record');
 });

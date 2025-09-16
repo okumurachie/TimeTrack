@@ -11,37 +11,41 @@
 @include('components.header')
 
 <div class="app">
-    <div class="change-month-button//group">
-        <!-- 先月・当月・翌月切り替え表示。遷移した際に、その月の一覧が表示される -->
-        <button class="last-month">前月</button><!--表示されてる月の前の月を表示させるボタン「前月」の前に左向き矢印マーク付ける-->
-        <button type="button"> 2025/09</button><!--表示されてる月（2025/09等）を表示し、月の前にカレンダーマーク付ける-->
-        <button class="next-month">前月</button><!--表示されてる月の翌月を表示させるボタン「翌月」の後ろに右向き矢印マーク付ける-->
+    <div class="month-navigation">
+        <a href="{{route('my-record.list', ['month' => $currentMonth->copy()->subMonth()->format('Y-m')])}}" , class="month-button last-month">前月</a>
+        <span class="current-month">{{ $currentMonth->format('Y/m') }}</span>
+        <a href="{{route('my-record.list', ['month' => $currentMonth->copy()->addMonth()->format('Y-m')])}}" , class="month-button next-month">翌月</a>
     </div>
     <table class="record__list">
-        <tr class="table__header">
-            <th class="date">日付</th>
-            <th>出勤</th>
-            <th>退勤</th>
-            <th>休憩</th>
-            <th>合計</th>
-            <th class="detail">
-                詳細
-            </th>
-        </tr>
+        <thead>
+            <tr class="table__header">
+                <th class="date">日付</th>
+                <th>出勤</th>
+                <th>退勤</th>
+                <th>休憩</th>
+                <th>合計</th>
+                <th class="detail">詳細</th>
+            </tr>
+        </thead>
 
-        <!-- @foreach(その月の勤怠データをループ表示させる) -->
-        <tr class="table__row">
-            <td>09/01(月)</td> //出勤日
-            <td>09:00</td> //出勤時間
-            <td>18:00</td> //退勤時間
-            <td>1:00</td> //その日の休憩取得時間
-            <td>08:00</td> //その勤務時間
-            <td class="detail__link"> //詳細画面へ遷移
-                <a href="">詳細</a>
-            </td>
-        </tr>
-        <!-- @endforeach -->
-
+        <tbody>
+            @forelse($attendances as $attendance)
+            <tr class="table__row">
+                <td>{{ $attendance->work_date->format('m/d(D)') }}</td>
+                <td>{{ $attendance->clock_in?->format('H:i') ?? '' }}</td>
+                <td>{{ $attendance->clock_out?->format('H:i') ?? '' }}</td>
+                <td>{{ $attendance->total_break ? gmdate('H:i', $attendance->total_break) : '' }}</td>
+                <td>{{ $attendance->total_work ? gmdate('H:i', $attendance->total_work) : '' }}</td>
+                <td class="detail__link">
+                    <a href="{{ route('detail.record', $attendance->id) }}">詳細</a>
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="6" class="no-data">この月の勤怠データはありません</td>
+            </tr>
+            @endforelse
+        </tbody>
     </table>
 </div>
 @endsection

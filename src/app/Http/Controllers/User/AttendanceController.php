@@ -7,6 +7,7 @@ use App\Models\Attendance;
 use App\Models\BreakTime;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
@@ -96,10 +97,21 @@ class AttendanceController extends Controller
         return redirect()->route('attendance.index')->with('error', 'すでに打刻済みです');
     }
 
-    public function showMyRecord()
+    public function showMyRecord(Request $request)
     {
         $user = Auth::user();
-        $attendances = Attendance::find()->user_id;
-        return view('my-record', compact('attendances'));
+
+        $month = $request->query('month', Carbon::now()->format('Y-m'));
+        $currentMonth = Carbon::createFormFormat('Y-m', $month);
+
+        $startOfMonth = $currentMonth->copy()->startOfMonth();
+        $endOfMonth = $currentMonth->copy()->endOfMonth();
+
+        $attendances = Attendance::where('user_id', $user->id)
+            ->whereBetween('work_date', [$startOfMonth, $endOfMonth])
+            ->orderBy('work_date')
+            ->get();
+
+        return view('my-record', compact('attendances', 'currentMonth'));
     }
 }
