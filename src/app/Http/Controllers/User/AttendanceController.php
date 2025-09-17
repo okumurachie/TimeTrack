@@ -8,6 +8,7 @@ use App\Models\BreakTime;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 class AttendanceController extends Controller
 {
@@ -112,6 +113,11 @@ class AttendanceController extends Controller
             ->orderBy('work_date')
             ->get();
 
-        return view('my-records', compact('attendances', 'currentMonth'));
+        $hasAttendance = $attendances->isNotEmpty();
+        $attendancesByDate = $attendances->keyBy(fn($attendance) => $attendance->work_date->format('Y-m-d'));
+
+        $dates = CarbonPeriod::create($startOfMonth, $endOfMonth);
+
+        return view('my-records', compact('dates', 'attendancesByDate', 'hasAttendance', 'currentMonth'));
     }
 }

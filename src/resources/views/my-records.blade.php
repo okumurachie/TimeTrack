@@ -19,9 +19,9 @@
             <span class="current-month">{{ $currentMonth->format('Y/m') }}</span>
             <a href="{{route('my-record.list', ['month' => $currentMonth->copy()->addMonth()->format('Y-m')])}}" , class="month-button next-month">翌月</a>
         </div>
-        <table class="record__list">
+        <table class="records__list__table">
             <thead>
-                <tr class="table__header">
+                <tr class="table__row">
                     <th class="date">日付</th>
                     <th>出勤</th>
                     <th>退勤</th>
@@ -32,22 +32,31 @@
             </thead>
 
             <tbody>
-                @forelse($attendances as $attendance)
-                <tr class="table__row">
-                    <td>{{ $attendance->work_date->format('m/d(D)') }}</td>
-                    <td>{{ $attendance->clock_in?->format('H:i') ?? '' }}</td>
-                    <td>{{ $attendance->clock_out?->format('H:i') ?? '' }}</td>
-                    <td>{{ $attendance->total_break ? gmdate('H:i', $attendance->total_break * 60) : '' }}</td>
-                    <td>{{ $attendance->total_work ? gmdate('H:i', $attendance->total_work * 60) : '' }}</td>
-                    <td class="detail__link">
-                        <a href="{{ route('detail.record', $attendance->id) }}">詳細</a>
-                    </td>
-                </tr>
-                @empty
+                @if(!$hasAttendance)
                 <tr>
                     <td colspan="6" class="no-data">この月の勤怠データはありません</td>
                 </tr>
-                @endforelse
+                @else
+                @foreach($dates as $date)
+                @php
+                $attendance = $attendancesByDate[$date->format('Y-m-d')] ?? null;
+                @endphp
+                <tr class="table__row">
+                    <td>{{ $date->format('m/d') }}({{ $date->isoFormat('ddd') }})</td>
+                    <td>{{ $attendance?->clock_in?->format('H:i') ?? '' }}</td>
+                    <td>{{ $attendance?->clock_out?->format('H:i') ?? '' }}</td>
+                    <td>{{ $attendance?->total_break ? gmdate('H:i', $attendance->total_break * 60) : '' }}</td>
+                    <td>{{ $attendance?->total_work ? gmdate('H:i', $attendance->total_work * 60) : '' }}</td>
+                    <td class="detail__link">
+                        @if($attendance)
+                        <a href="{{ route('detail.record', $attendance->id) }}">詳細</a>
+                        @else
+                        <span>詳細</span>
+                        @endif
+                    </td>
+                </tr>
+                @endforeach
+                @endif
             </tbody>
         </table>
     </div>

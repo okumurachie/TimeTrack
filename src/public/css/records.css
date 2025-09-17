@@ -1,6 +1,8 @@
 .records__list{
     width: 60%;
     margin: 100px auto 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 .page-title{
     padding: 2px 20px;
@@ -21,6 +23,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
+    margin-bottom: 40px;
+    box-sizing: border-box;
 }
 .month-navigation a{
     text-decoration: none;
@@ -28,13 +32,17 @@
     font-weight: 700;
     color: #737373;
 }
-
 .month-button{
     position: relative;
+}
+.month-button.last-month {
     padding-left: 35px;
+    padding-right: 10px;
+}
+.month-button.next-month {
+    padding-left: 10px;
     padding-right: 35px;
 }
-
 .last-month::before {
     content: "";
     position: absolute;
@@ -78,4 +86,36 @@
     background: url("/images/calendar.png") no-repeat center/contain;
     background-size: contain;
     transform: translateY(-50%);
+}
+
+.records__list__table{
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-sizing: border-box;
+}
+.records__list__table th,
+.records__list__table td {
+    border-bottom: 3px solid #e1e1e1;
+    padding: 8px 12px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #737373;
+    text-align: center;
+}
+.records__list__table th.date{
+    text-align: left;
+    padding-left: 60px;
+}
+.table__row{
+    width: 100%;
+    height: 40px;
+}
+.detail__link span{
+    color: #000000;
+}
+.detail__link a{
+    text-decoration: none;
+    color: #000000;
 }
