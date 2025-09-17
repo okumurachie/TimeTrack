@@ -40,6 +40,7 @@ Route::prefix('admin')->middleware(['auth:admin'])->group(function () {
 
     Route::post('/logout', [AdminAuthenticatedSessionController::class, 'destroy'])
         ->name('admin.logout');
+    Route::get('/attendance/staff/{id}', [AdminAttendanceController::class, 'showStaffRecord'])->name('staff-record.list');
 });
 
 //一般ユーザールート
