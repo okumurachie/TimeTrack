@@ -1,0 +1,81 @@
+.records__list{
+    width: 60%;
+    margin: 100px auto 0;
+}
+.page-title{
+    padding: 2px 20px;
+    border-left: 8px solid #000000;
+    height: 40px;
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 40px;
+}
+
+.month-navigation{
+    width: 100%;
+    height: 60px;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+.month-navigation a{
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 700;
+    color: #737373;
+}
+
+.month-button{
+    position: relative;
+    padding-left: 35px;
+    padding-right: 35px;
+}
+
+.last-month::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    display: block;
+    width: 20px;
+    height: 15px;
+    background: url("/images/arrow.png") no-repeat center/contain;
+    background-size: contain;
+    opacity: 0.3;
+    transform: translateY(-50%);
+}
+.next-month::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    display: block;
+    width: 20px;
+    height: 15px;
+    background: url("/images/arrow.png") no-repeat center/contain;
+    background-size: contain;
+    opacity: 0.3;
+    transform: translateY(-50%) rotate(-180deg);
+}
+.current-month{
+    font-size: 20px;
+    font-weight: 700;
+    position: relative;
+    padding-left: 40px;
+}
+.current-month::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    display: block;
+    width: 25px;
+    height: 25px;
+    background: url("/images/calendar.png") no-repeat center/contain;
+    background-size: contain;
+    transform: translateY(-50%);
+}

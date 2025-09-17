@@ -102,7 +102,7 @@ class AttendanceController extends Controller
         $user = Auth::user();
 
         $month = $request->query('month', Carbon::now()->format('Y-m'));
-        $currentMonth = Carbon::createFormFormat('Y-m', $month);
+        $currentMonth = Carbon::createFromFormat('Y-m', $month);
 
         $startOfMonth = $currentMonth->copy()->startOfMonth();
         $endOfMonth = $currentMonth->copy()->endOfMonth();
@@ -112,6 +112,6 @@ class AttendanceController extends Controller
             ->orderBy('work_date')
             ->get();
 
-        return view('my-record', compact('attendances', 'currentMonth'));
+        return view('my-records', compact('attendances', 'currentMonth'));
     }
 }
