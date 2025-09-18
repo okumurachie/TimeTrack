@@ -4,7 +4,6 @@ body {
     height: 100%;
     margin: 0;
     padding: 0;
-    background-color: #e1e1e1;
 }
 body {
     font-family: 'Inter', sans-serif;
@@ -13,14 +12,6 @@ body {
     width: 100%;
     min-height: 100vh;
     margin: 0 auto;
-    box-sizing: border-box;
-}
-.app {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    min-height: 100vh;
-    margin: 0;
     box-sizing: border-box;
 }
 img{

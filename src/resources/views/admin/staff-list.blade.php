@@ -25,7 +25,7 @@
             </thead>
 
             <tbody>
-                @if(!$users)
+                @if($users->isEmpty())
                 <tr>
                     <td colspan="6" class="no-data">スタッフのデータはありません</td>
                 </tr>
@@ -38,7 +38,7 @@
                     <td>{{$user->name}}</td>
                     <td>{{$user->email}}</td>
                     <td class="detail__link">
-                        @if($attendance)
+                        @if($attendance->isNotEmpty())
                         <a href="{{ route('staff-record.list', $user->id) }}">詳細</a>
                         @else
                         <span>勤怠記録はありません</span>
