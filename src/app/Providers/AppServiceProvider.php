@@ -20,6 +20,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Carbon::setLocale('ja');
+        Carbon::setLocale(config('app.locale'));
+
+        Carbon::macro('toJapaneseDate', function () {
+            /** @var \Carbon\Carbon $this */
+            return $this->format('Y年m月d日');
+        });
     }
 }

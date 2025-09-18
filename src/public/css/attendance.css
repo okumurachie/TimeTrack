@@ -37,7 +37,7 @@
     text-align: center;
     font-size: 35px;
     font-weight: 400;
-    background-color: #f5f5f5;
+    background-color:  #e1e1e1;
     margin-bottom: 30px;
 }
 .current-time{
@@ -46,7 +46,7 @@
     text-align: center;
     font-size: 80px;
     font-weight: 700;
-    background-color: #f5f5f5;
+    background-color:  #e1e1e1;
 }
 
 .stamping__buttons{

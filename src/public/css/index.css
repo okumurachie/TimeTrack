@@ -1,0 +1,120 @@
+.attendances__list{
+    width: 60%;
+    margin: 100px auto 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.page-title{
+    padding: 2px 20px;
+    border-left: 8px solid #000000;
+    height: 40px;
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 40px;
+}
+
+.date-navigation{
+    width: 100%;
+    height: 60px;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    margin-bottom: 40px;
+    box-sizing: border-box;
+}
+.date-navigation a{
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 700;
+    color: #737373;
+}
+.date-button{
+    position: relative;
+}
+.date-button.last-day {
+    padding-left: 35px;
+    padding-right: 10px;
+}
+.date-button.next-day {
+    padding-left: 10px;
+    padding-right: 35px;
+}
+.last-day::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    display: block;
+    width: 20px;
+    height: 15px;
+    background: url("/images/arrow.png") no-repeat center/contain;
+    background-size: contain;
+    opacity: 0.3;
+    transform: translateY(-50%);
+}
+.next-day::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    display: block;
+    width: 20px;
+    height: 15px;
+    background: url("/images/arrow.png") no-repeat center/contain;
+    background-size: contain;
+    opacity: 0.3;
+    transform: translateY(-50%) rotate(-180deg);
+}
+.work-date{
+    font-size: 20px;
+    font-weight: 700;
+    position: relative;
+    padding-left: 40px;
+}
+.work-date::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    display: block;
+    width: 25px;
+    height: 25px;
+    background: url("/images/calendar.png") no-repeat center/contain;
+    background-size: contain;
+    transform: translateY(-50%);
+}
+
+.attendances__list__table{
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-sizing: border-box;
+}
+.attendances__list__table th,
+.attendances__list__table td {
+    border-bottom: 3px solid #e1e1e1;
+    padding: 8px 12px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #737373;
+    text-align: center;
+}
+.attendances__list__table th.detail{
+    width: 150px;
+}
+.table__row{
+    width: 100%;
+    height: 40px;
+}
+.detail__link span{
+    color: #000000;
+}
+.detail__link a{
+    text-decoration: none;
+    color: #000000;
+}

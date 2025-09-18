@@ -13,9 +13,19 @@ use Carbon\CarbonPeriod;
 
 class AttendanceController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.attendance.index');
+        $users = User::all();
+        $today = Carbon::now()->toJapaneseDate();
+        $date = $request->query('date', now()->toDateString());
+        $workDate = Carbon::parse($date);
+
+        $attendances = Attendance::whereDate('work_date', $workDate)
+            ->get()
+            ->keyBy('user_id');
+
+        $hasAttendance = $attendances->isNotEmpty();
+        return view('admin.attendance.index', compact('users', 'today', 'workDate', 'attendances', 'hasAttendance'));
     }
 
     public function showStaffRecord(Request $request, $id)

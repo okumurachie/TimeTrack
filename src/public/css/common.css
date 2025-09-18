@@ -15,7 +15,7 @@ body {
 .app {
     display: flex;
     flex-direction: column;
-    width: 100vw;
+    min-width: 100vw;
     min-height: 100vh;
     background-color: #e1e1e1;
     margin: 0 auto;

@@ -14,11 +14,11 @@ class CustomLoginResponse implements LoginResponseContract
     public function toResponse($request): RedirectResponse
     {
         if (Auth::guard('admin')->check()) {
-            return redirect()->intended('/admin/attendance/list');
+            return redirect()->intended(route('admin.attendances.index'));
         }
 
         if (Auth::guard('web')->check()) {
-            return redirect()->intended('/attendance');
+            return redirect()->intended(route('attendance.index'));
         }
     }
 }

@@ -35,7 +35,8 @@ Route::post('/admin/login', [AdminAuthenticatedSessionController::class, 'store'
 // 管理者専用ルート
 Route::prefix('admin')->middleware(['auth:admin'])->group(function () {
 
-    Route::get('/attendance/list', [AdminAttendanceController::class, 'index']);
+    Route::get('/attendance/list', [AdminAttendanceController::class, 'index'])->name('admin.attendances.index');
+    Route::get('/attendance/{id}', [AdminAttendanceController::class, 'detail'])->name('admin.detail.record');
 
 
     Route::post('/logout', [AdminAuthenticatedSessionController::class, 'destroy'])
