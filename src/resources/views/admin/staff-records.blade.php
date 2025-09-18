@@ -12,7 +12,7 @@
 
 <div class="app">
     <div class="records__list">
-        <h1 class="page-title">userさんの勤怠</h1>
+        <h1 class="page-title">{{$user->name}}さんの勤怠</h1>
 
         <div class="month-navigation">
             <a href="{{route('my-record.list', ['month' => $currentMonth->copy()->subMonth()->format('Y-m')])}}" , class="month-button last-month">前月</a>
