@@ -37,11 +37,10 @@ Route::prefix('admin')->middleware(['auth:admin'])->group(function () {
 
     Route::get('/attendance/list', [AdminAttendanceController::class, 'index'])->name('admin.attendances.index');
     Route::get('/attendance/{id}', [AdminAttendanceController::class, 'detail'])->name('admin.detail.record');
-
-
+    Route::get('/staff/list', [AdminAttendanceController::class, 'staffList'])->name('admin.staff.list');
+    Route::get('/attendance/staff/{id}', [AdminAttendanceController::class, 'showStaffRecord'])->name('staff-record.list');
     Route::post('/logout', [AdminAuthenticatedSessionController::class, 'destroy'])
         ->name('admin.logout');
-    Route::get('/attendance/staff/{id}', [AdminAttendanceController::class, 'showStaffRecord'])->name('staff-record.list');
 });
 
 //一般ユーザールート

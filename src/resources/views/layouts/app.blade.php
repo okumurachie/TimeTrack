@@ -12,7 +12,9 @@
 
 <body>
     <div class="content">
-        @yield('content')
+        <div class="container">
+            @yield('content')
+        </div>
     </div>
 </body>
 

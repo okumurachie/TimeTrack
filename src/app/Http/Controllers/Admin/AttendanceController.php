@@ -25,7 +25,13 @@ class AttendanceController extends Controller
             ->keyBy('user_id');
 
         $hasAttendance = $attendances->isNotEmpty();
-        return view('admin.attendance.index', compact('users', 'today', 'workDate', 'attendances', 'hasAttendance'));
+        return view('admin.index', compact('users', 'today', 'workDate', 'attendances', 'hasAttendance'));
+    }
+
+    public function staffList(Request $request)
+    {
+        $users = User::all();
+        return view('admin.staff-list', compact('users'));
     }
 
     public function showStaffRecord(Request $request, $id)
