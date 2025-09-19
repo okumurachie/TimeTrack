@@ -31,6 +31,7 @@
     font-size: 16px;
     font-weight: 700;
     color: #737373;
+    cursor: pointer;
 }
 .date-button{
     position: relative;
@@ -117,4 +118,5 @@
 .detail__link a{
     text-decoration: none;
     color: #000000;
+    cursor: pointer;
 }

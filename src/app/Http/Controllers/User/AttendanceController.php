@@ -43,7 +43,6 @@ class AttendanceController extends Controller
                     return redirect()->route('attendance.index');
                 }
                 break;
-
             case 'break_start';
                 if (!$attendance->is_on_break) {
                     $attendance->update(['is_on_break' => true]);
@@ -54,7 +53,6 @@ class AttendanceController extends Controller
                     return redirect()->route('attendance.index');
                 }
                 break;
-
             case 'break_end';
                 if ($attendance->is_on_break) {
                     $attendance->update(['is_on_break' => false]);
@@ -65,7 +63,6 @@ class AttendanceController extends Controller
                     return redirect()->route('attendance.index');
                 }
                 break;
-
             case 'clock_out';
                 if (!$attendance->clock_out) {
                     if ($attendance->is_on_break) {
@@ -77,9 +74,7 @@ class AttendanceController extends Controller
                     }
 
                     $attendance->update(['clock_out' => now()]);
-
                     $workMinutes = $attendance->clock_in->diffInMinutes($attendance->clock_out);
-
                     $breakMinutes = $attendance->breakTimes->sum(function ($break) {
                         return $break->break_end ? $break->break_start->diffInMinutes($break->break_end) : 0;
                     });
@@ -115,9 +110,23 @@ class AttendanceController extends Controller
 
         $hasAttendance = $attendances->isNotEmpty();
         $attendancesByDate = $attendances->keyBy(fn($attendance) => $attendance->work_date->format('Y-m-d'));
-
         $dates = CarbonPeriod::create($startOfMonth, $endOfMonth);
 
         return view('my-records', compact('dates', 'attendancesByDate', 'hasAttendance', 'currentMonth'));
     }
+
+    public function detail(Request $request, $id)
+    {
+        $user = Auth::user();
+        $attendance = Attendance::with(['user', 'corrections'])
+            ->where('user_id', $user->id)
+            ->findOrFail($id);
+        $date = $request->query('date', $attendance->work_date->toDateString());
+        $workDate = Carbon::parse($date);
+        $breakTimes = BreakTime::where('attendance_id', $attendance->id)->get();
+        $latestCorrection = $attendance->corrections()->latest()->first();
+
+        return view('detail', compact('user', 'attendance', 'workDate', 'breakTimes', 'latestCorrection'));
+    }
+    public function attendanceRequest(Request $request) {}
 }
