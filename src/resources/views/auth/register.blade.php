@@ -38,3 +38,4 @@
     <button class="btn btn--big">登録する</button>
     <a href="/login" class="link">ログインはこちら</a>
 </form>
+@endsection

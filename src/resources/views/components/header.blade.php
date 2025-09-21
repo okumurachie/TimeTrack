@@ -1,6 +1,8 @@
 <header class="header">
     <div class="header__logo">
-        <img src="{{asset('images/logo.svg')}}" alt="ロゴ" class="header__logo-image">
+        <a href="{{ route('attendance.index') }}">
+            <img src="{{asset('images/logo.svg')}}" alt="ロゴ" class="header__logo-image">
+        </a>
     </div>
     <nav class="header__nav">
         <ul>

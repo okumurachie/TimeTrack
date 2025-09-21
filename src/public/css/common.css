@@ -47,7 +47,6 @@ button{
     font-size: 16px;
     justify-content: space-between;
     height: 80px;
-    padding: 0 30px;
     position: sticky;
     z-index: 1000;
     top: 0px;
@@ -60,6 +59,7 @@ ul {
 
 .header__logo{
     width: 330px;
+    padding-left: 30px;
     height: fit-content;
     vertical-align: middle;
 }
@@ -67,7 +67,6 @@ ul {
 .header__nav{
     display: flex;
     padding-right: 30px;
-    margin-right: 50px;
 }
 
 .header__nav ul{
