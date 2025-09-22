@@ -18,42 +18,35 @@
     <div class="records__list">
         <h1 class="page-title">勤怠一覧</h1>
 
-        <div class="month-navigation">
-            <a href="{{route('my-record.list', ['month' => $currentMonth->copy()->subMonth()->format('Y-m')])}}" , class="month-button last-month">前月</a>
-            <span class="current-month">{{ $currentMonth->format('Y/m') }}</span>
-            <a href="{{route('my-record.list', ['month' => $currentMonth->copy()->addMonth()->format('Y-m')])}}" , class="month-button next-month">翌月</a>
-        </div>
         <table class="records__list__table">
             <thead>
                 <tr class="table__row">
-                    <th class="date">日付</th>
-                    <th>出勤</th>
-                    <th>退勤</th>
-                    <th>休憩</th>
-                    <th>合計</th>
+                    <th class="status">状態</th>
+                    <th>名前</th>
+                    <th>対象日時</th>
+                    <th>申請理由</th>
+                    <th>申請日時</th>
                     <th class="detail">詳細</th>
                 </tr>
             </thead>
 
             <tbody>
-                @if(!$hasAttendance)
+                @if(!$hasCollections)
                 <tr>
-                    <td colspan="6" class="no-data">この月の勤怠データはありません</td>
+                    <td colspan="6" class="no-data">申請データはありません</td>
                 </tr>
                 @else
-                @foreach($dates as $date)
-                @php
-                $attendance = $attendancesByDate[$date->format('Y-m-d')] ?? null;
-                @endphp
+                @if(Auth::guard('admin')->check())
+                @foreach($users as $user)
                 <tr class="table__row">
-                    <td>{{ $date->format('m/d') }}({{ $date->isoFormat('ddd') }})</td>
-                    <td>{{ $attendance?->clock_in?->format('H:i') ?? '' }}</td>
-                    <td>{{ $attendance?->clock_out?->format('H:i') ?? '' }}</td>
-                    <td>{{ $attendance?->total_break ? gmdate('H:i', $attendance->total_break * 60) : '' }}</td>
-                    <td>{{ $attendance?->total_work ? gmdate('H:i', $attendance->total_work * 60) : '' }}</td>
+                    <td>{{ $user->corrections->status}}</td>
+                    <td>{{ $user->name}}</td>
+                    <td>{{ $user->attendance->work_date->format(Y/m/d)}}</td>
+                    <td>{{ $user->corrections->reason}}</td>
+                    <td>{{ $user->attendances->created_at->format(Y/m/d)}}</td>
                     <td class="detail__link">
-                        @if($attendance)
-                        <a href="{{ route('detail.record', $attendance->id) }}">詳細</a>
+                        @if($correction)
+                        <a href="{{ route('admin.detail.record', $attendance->id) }}">詳細</a>
                         @else
                         <span>詳細</span>
                         @endif
