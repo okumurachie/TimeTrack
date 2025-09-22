@@ -57,11 +57,21 @@ class AttendanceDataSeeder extends Seeder
                     $statuses = ['pending', 'approved'];
                     $reasons = ['遅延のため', '早退のため', '打刻漏れのため'];
 
+                    $changes = [
+                        'clock_in' => optional($attendance->clock_in)->copy()->addMinutes(rand(5, 15))->format('H:i'),
+                        'clock_out' => optional($attendance->clock_out)->copy()->subMinutes(rand(5, 15))->format('H:i'),
+                        'breaks' => [
+                            ['start' => '12:00', 'end' => '12:30'],
+                            ['start' => '15:00', 'end' => '15:30'],
+                        ],
+                    ];
+
                     Correction::create([
                         'attendance_id' => $attendance->id,
                         'user_id' => $user->id,
                         'status' => $statuses[array_rand($statuses)],
                         'reason' => $reasons[array_rand($reasons)],
+                        'changes' => $changes,
                     ]);
 
                     $attendance->update(['has_request' => true]);

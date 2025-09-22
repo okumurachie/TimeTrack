@@ -40,12 +40,13 @@
                     <td>
                         <label class="input__label">出勤・退勤</label>
                         <div class="input__space">
-                            <input type="text" name="clock_in" class="clock_in" value="{{ old('clock_in', optional($attendance?->clock_in)->format('H:i')) }}">
-                            <span class="tilde-mark">〜</span>
-                            <input type="text" name="clock_out" class="clock_out" value="{{ old('clock_out', optional($attendance?->clock_out)->format('H:i')) }}">
+                            <div class="input__group">
+                                <input type="text" name="clock_in" class="clock_in" value="{{ old('clock_in', optional($attendance?->clock_in)->format('H:i')) }}">
+                                <span class="tilde-mark">〜</span>
+                                <input type="text" name="clock_out" class="clock_out" value="{{ old('clock_out', optional($attendance?->clock_out)->format('H:i')) }}">
+                            </div>
                             <div class="form__error">
                                 @error('clock_in'){{ $message }}@enderror
-                                @error('clock_out'){{ $message }}@enderror
                             </div>
                         </div>
                     </td>
@@ -63,12 +64,17 @@
                             {{ $i === 0 ? '休憩' : '休憩' . ($i + 1) }}
                         </label>
                         <div class="input__space">
-                            <input id="breaks-{{ $i }}-start" type="text" name="breaks[{{ $i }}][start]" class="clock_in" value="{{$startValue}}">
-                            <span class="tilde-mark" aria-hidden="true">〜</span>
-                            <input id="breaks-{{ $i }}-end" type="text" name="breaks[{{ $i }}][end]" class="clock_out" value="{{$endValue}}">
+                            <div class="input__group">
+                                <input id="breaks-{{ $i }}-start" type="text" name="breaks[{{ $i }}][start]" class="clock_in" value="{{$startValue}}">
+                                <span class="tilde-mark" aria-hidden="true">〜</span>
+                                <input id="breaks-{{ $i }}-end" type="text" name="breaks[{{ $i }}][end]" class="clock_out" value="{{$endValue}}">
+                            </div>
                             <div class="form__error">
-                                @error($startKey){{ $message }}@enderror
-                                @error($endKey){{ $message }}@enderror
+                                @foreach([$startKey,$endKey] as $key)
+                                @error($key)
+                                <div>{{ $message }}</div>
+                                @enderror
+                                @endforeach
                             </div>
                         </div>
                     </td>
@@ -78,12 +84,20 @@
                     <td>
                         <label class="input__label">休憩{{$breakTimes->count() + 1 }}</label>
                         <div class="input__space">
-                            <input type="text" class="clock_in" name="breaks[{{ $breakTimes->count() }}][start]" value="{{ old("breaks." . $breakTimes->count() . ".start") }}">
-                            <span class="tilde-mark" aria-hidden="true">〜</span>
-                            <input type="text" class="clock_out" name="breaks[{{ $breakTimes->count() }}][end]" value="{{ old("breaks." . $breakTimes->count() . ".end") }}">
+                            <div class="input__group">
+                                <input type="text" class="clock_in" name="breaks[{{ $breakTimes->count() }}][start]" value="{{ old("breaks." . $breakTimes->count() . ".start") }}">
+                                <span class="tilde-mark" aria-hidden="true">〜</span>
+                                <input type="text" class="clock_out" name="breaks[{{ $breakTimes->count() }}][end]" value="{{ old("breaks." . $breakTimes->count() . ".end") }}">
+                            </div>
                             <div class="form__error">
-                                @error("breaks." . $breakTimes->count() . ".start") {{ $message }} @enderror
-                                @error("breaks." . $breakTimes->count() . ".end") {{ $message }} @enderror
+                                @foreach(['start', 'end'] as $type)
+                                @php
+                                $key = "breaks." . $breakTimes->count() . ".$type";
+                                @endphp
+                                @error($key)
+                                <div>{{ $message }} </div>
+                                @enderror
+                                @endforeach
                             </div>
                         </div>
                     </td>
@@ -105,7 +119,7 @@
             </table>
             <div class="form__button">
                 @if($latestCorrection && $latestCorrection->status === 'pending')
-                <p class="pending">*承認待ちのため修正はできません</p>
+                <p class="pending">*承認待ちのため修正はできません。</p>
                 @else
                 <button class="form__button__submit">修正</button>
                 @endif

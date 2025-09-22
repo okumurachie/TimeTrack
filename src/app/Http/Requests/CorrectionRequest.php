@@ -23,6 +23,8 @@ class CorrectionRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'attendance_id' => ['required'],
+            'user_id' => ['required'],
             'clock_in'       => ['required', 'regex:/^\d{2}:\d{2}$/'],
             'clock_out'      => ['required', 'regex:/^\d{2}:\d{2}$/'],
             'breaks.*.start' => ['nullable', 'regex:/^\d{2}:\d{2}$/'],
@@ -54,7 +56,6 @@ class CorrectionRequest extends FormRequest
 
             if ($in && $out && $in->gte($out)) {
                 $validator->errors()->add('clock_in', '出勤時間もしくは退勤時間が不適切な値です');
-                $validator->errors()->add('clock_out', '出勤時間もしくは退勤時間が不適切な値です');
             }
 
             foreach ($breaks as $i => $break) {
@@ -70,6 +71,10 @@ class CorrectionRequest extends FormRequest
 
                 if ($end && $out && $end->gte($out)) {
                     $validator->errors()->add("breaks.$i.end", '休憩時間もしくは退勤時間が不適切な値です');
+                }
+
+                if ($start && $end && $start->gte($end)) {
+                    $validator->errors()->add("breaks.$i.start", '休憩時間が不適切な値です');
                 }
             }
         });

@@ -13,7 +13,12 @@ class Correction extends Model
         'attendance_id',
         'user_id',
         'status',
-        'reason'
+        'reason',
+        'changes',
+    ];
+
+    protected $casts = [
+        'changes' => 'array',
     ];
 
     public function attendance()

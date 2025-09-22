@@ -5,8 +5,10 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\BreakTime;
+use App\Models\Correction;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Http\Requests\CorrectionRequest;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 
@@ -128,5 +130,27 @@ class AttendanceController extends Controller
 
         return view('detail', compact('user', 'attendance', 'workDate', 'breakTimes', 'latestCorrection'));
     }
-    public function attendanceRequest(Request $request) {}
+    public function store(CorrectionRequest $request, $id)
+    {
+        $user = Auth::user();
+        $attendance = Attendance::where('user_id', $user->id)->findOrFail($id);
+        $changes = [
+            'clock_in' => $request->input('clock_in'),
+            'clock_out' => $request->input('clock_out'),
+            'breaks' => $request->input('breaks', []),
+        ];
+
+        $correction = Correction::create([
+            'attendance_id' => $attendance->id,
+            'user_id' => $user->id,
+            'status' => 'pending',
+            'reason' => $request->input('reason'),
+            'changes' => $changes,
+
+        ]);
+
+        $attendance->update(['has_request' => true]);
+
+        return redirect()->route('detail.record', $attendance->id);
+    }
 }

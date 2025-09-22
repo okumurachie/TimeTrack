@@ -30,7 +30,7 @@
     padding: 20px;
     font-size: 16px;
     font-weight: 700;
-    color: #737373;
+    color: #000000;
     display: flex;
     flex-direction: row;
     gap: 30px;
@@ -51,11 +51,14 @@
 {
     width: 40%;
 }
+.user-name{
+    padding:5px 30px;
+}
 .work_date{
-    padding: 5px 20px;
+    padding: 5px 30px;
     display: flex;
     flex-direction: row;
-    gap: 120px;
+    gap: 130px;
 }
 .input__space,
 .textarea__space{
@@ -63,9 +66,12 @@
 }
 .input__space {
     display: flex;
+    flex-direction: column;
+}
+.input__group{
+    display: flex;
     gap: 40px;
     justify-content: flex-start;
-
 }
 input,
 textarea{
@@ -108,4 +114,8 @@ textarea{
     font-size: 18px;
     font-weight: 800;
     color: rgba(255, 0, 0, 0.5);
+}
+.form__error{
+    display: flex;
+    flex-direction:column;
 }

@@ -39,9 +39,14 @@ Route::prefix('admin')->middleware(['auth:admin'])->group(function () {
     Route::get('/attendance/{id}', [AdminAttendanceController::class, 'detail'])->name('admin.detail.record');
     Route::get('/staff/list', [AdminAttendanceController::class, 'staffList'])->name('admin.staff.list');
     Route::get('/attendance/staff/{id}', [AdminAttendanceController::class, 'showStaffRecord'])->name('staff-record.list');
+    Route::get('/attendance/detail/{id}', [AdminAttendanceController::class, 'detail'])->name('admin.detail.record');
     Route::post('/logout', [AdminAuthenticatedSessionController::class, 'destroy'])
         ->name('admin.logout');
 });
+Route::middleware(['auth:admin'])->group(function () {
+    Route::get('/stamp_correction_request/list', [UserAttendanceController::class, 'correctionList'])->name('admin.correction.list');
+});
+
 
 //一般ユーザールート
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
@@ -54,5 +59,6 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::post('/attendance/stamp', [UserAttendanceController::class, 'stamp'])->name('attendance.stamp');
     Route::get('/attendance/list', [UserAttendanceController::class, 'showMyRecord'])->name('my-record.list');
     Route::get('/attendance/detail/{id}', [UserAttendanceController::class, 'detail'])->name('detail.record');
-    Route::post('/attendance/detail/{id}', [UserAttendanceController::class, 'attendanceRequest'])->name('attendance.request');
+    Route::post('/attendance/detail/{id}', [UserAttendanceController::class, 'store'])->name('attendance.request');
+    Route::get('/stamp_correction_request/list', [UserAttendanceController::class, 'correctionList'])->name('correction.list');
 });
