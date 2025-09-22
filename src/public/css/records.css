@@ -121,3 +121,31 @@
     color: #000000;
     cursor: pointer;
 }
+
+.status__lists{
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    height: 47px;
+    padding-top: 20px;
+    border-bottom: 1px solid #000000;
+    margin-bottom: 40px;
+}
+.pending,
+.approved{
+    display: inline-block;
+    width: 155px;
+    height: 35px;
+    font-weight: 400;
+    font-size: 16px;
+    text-decoration: none;
+    color: #000000;
+    padding-left: 40px;
+    padding-bottom: 10px;
+    line-height: 35px;
+}
+.pending.active,
+.approved.active{
+    font-weight: 700;
+
+}

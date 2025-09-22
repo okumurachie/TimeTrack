@@ -18,6 +18,16 @@
     <div class="records__list">
         <h1 class="page-title">勤怠一覧</h1>
 
+        <div class="status__lists">
+            @if(Auth::guard('admin')->check())
+            <a href="{{ route('admin.correction.list', ['tab' => 'pending']) }}" class="pending {{ $tab === 'pending' ? 'active' : '' }}">承認待ち</a>
+            <a href="{{ route('admin.correction.list', ['tab' => 'approved']) }}" class="approved {{ $tab === 'approved' ? 'active' : '' }}">承認済み</a>
+            @else
+            <a href="{{ route('user.correction.list', ['tab' => 'pending']) }}" class="pending {{ $tab === 'pending' ? 'active' : '' }}">承認待ち</a>
+            <a href="{{ route('user.correction.list', ['tab' => 'approved']) }}" class="approved {{ $tab === 'approved' ? 'active' : '' }}">承認済み</a>
+            @endif
+        </div>
+
         <table class="records__list__table">
             <thead>
                 <tr class="table__row">
@@ -31,29 +41,26 @@
             </thead>
 
             <tbody>
-                @if(!$hasCollections)
-                <tr>
-                    <td colspan="6" class="no-data">申請データはありません</td>
-                </tr>
-                @else
-                @if(Auth::guard('admin')->check())
-                @foreach($users as $user)
+                @forelse($corrections as $correction)
                 <tr class="table__row">
-                    <td>{{ $user->corrections->status}}</td>
-                    <td>{{ $user->name}}</td>
-                    <td>{{ $user->attendance->work_date->format(Y/m/d)}}</td>
-                    <td>{{ $user->corrections->reason}}</td>
-                    <td>{{ $user->attendances->created_at->format(Y/m/d)}}</td>
+                    <td>{{ $correction->status_label}}</td>
+                    <td>{{ $correction->user->name }}</td>
+                    <td>{{ $correction->attendance->work_date->format('Y/m/d') }}</td>
+                    <td>{{ $correction->reason }}</td>
+                    <td>{{ $correction->created_at->format('Y/m/d') }}</td>
                     <td class="detail__link">
-                        @if($correction)
-                        <a href="{{ route('admin.detail.record', $attendance->id) }}">詳細</a>
+                        @if(Auth::guard('admin')->check())
+                        <a href="{{ route('admin.detail.record', $correction->attendance->id) }}">詳細</a>
                         @else
-                        <span>詳細</span>
+                        <a href="{{ route('detail.record', $correction->attendance->id) }}">詳細</a>
                         @endif
                     </td>
                 </tr>
-                @endforeach
-                @endif
+                @empty
+                <tr>
+                    <td colspan="6" class="no-data">申請データはありません</td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>

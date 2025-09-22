@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Auth\AdminAuthenticatedSessionController;
 use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
 use App\Http\Controllers\User\AttendanceController as UserAttendanceController;
+use App\Http\Controllers\CorrectionController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 
@@ -40,12 +41,11 @@ Route::prefix('admin')->middleware(['auth:admin'])->group(function () {
     Route::get('/staff/list', [AdminAttendanceController::class, 'staffList'])->name('admin.staff.list');
     Route::get('/attendance/staff/{id}', [AdminAttendanceController::class, 'showStaffRecord'])->name('staff-record.list');
     Route::get('/attendance/detail/{id}', [AdminAttendanceController::class, 'detail'])->name('admin.detail.record');
+    Route::get('/stamp_correction_request/list', [CorrectionController::class, 'index'])->name('admin.correction.list');
     Route::post('/logout', [AdminAuthenticatedSessionController::class, 'destroy'])
         ->name('admin.logout');
 });
-Route::middleware(['auth:admin'])->group(function () {
-    Route::get('/stamp_correction_request/list', [UserAttendanceController::class, 'correctionList'])->name('admin.correction.list');
-});
+
 
 
 //一般ユーザールート
@@ -60,5 +60,5 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('/attendance/list', [UserAttendanceController::class, 'showMyRecord'])->name('my-record.list');
     Route::get('/attendance/detail/{id}', [UserAttendanceController::class, 'detail'])->name('detail.record');
     Route::post('/attendance/detail/{id}', [UserAttendanceController::class, 'store'])->name('attendance.request');
-    Route::get('/stamp_correction_request/list', [UserAttendanceController::class, 'correctionList'])->name('correction.list');
+    Route::get('/stamp_correction_request/list', [CorrectionController::class, 'index'])->name('user.correction.list');
 });

@@ -21,6 +21,19 @@ class Correction extends Model
         'changes' => 'array',
     ];
 
+    protected $appends = ['status_label'];
+
+    public function getStatusLabelAttribute()
+    {
+        $labels = [
+            'pending' => '承認待ち',
+            'approved' => '承認済み',
+            'rejected' => '却下',
+        ];
+        $raw = $this->attributes['status'] ?? null;
+        return $labels[$raw] ?? $raw;
+    }
+
     public function attendance()
     {
         return $this->belongsTo(Attendance::class);

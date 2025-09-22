@@ -8,7 +8,7 @@
         <ul>
             @if(Auth::check() && Auth::user()->hasVerifiedEmail())
             <li><a href="{{ route('my-record.list') }}">今月の出勤一覧</a></li>
-            <li><a href="/stamp_correction_request/list">申請一覧</a></li>
+            <li><a href="{{ route('user.correction.list')}}">申請一覧</a></li>
             <li>
                 <form action="/logout" class="logout" method="post">
                     @csrf
