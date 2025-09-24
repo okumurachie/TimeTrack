@@ -12,6 +12,7 @@ class Correction extends Model
     protected $fillable = [
         'attendance_id',
         'user_id',
+        'admin_id',
         'status',
         'reason',
         'changes',

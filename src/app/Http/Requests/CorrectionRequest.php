@@ -25,6 +25,7 @@ class CorrectionRequest extends FormRequest
         return [
             'attendance_id' => ['required'],
             'user_id' => ['required'],
+            'admin_id' => ['nullable'],
             'clock_in'       => ['required', 'regex:/^\d{2}:\d{2}$/'],
             'clock_out'      => ['required', 'regex:/^\d{2}:\d{2}$/'],
             'breaks.*.start' => ['nullable', 'regex:/^\d{2}:\d{2}$/'],

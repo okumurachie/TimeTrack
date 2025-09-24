@@ -15,9 +15,9 @@
         <h1 class="page-title">{{$user->name}}さんの勤怠</h1>
 
         <div class="month-navigation">
-            <a href="{{route('my-record.list', ['month' => $currentMonth->copy()->subMonth()->format('Y-m')])}}" , class="month-button last-month">前月</a>
+            <a href="{{route('staff-record.list', ['id' => $user->id, 'month' => $currentMonth->copy()->subMonth()->format('Y-m')])}}" , class="month-button last-month">前月</a>
             <span class="current-month">{{ $currentMonth->format('Y/m') }}</span>
-            <a href="{{route('my-record.list', ['month' => $currentMonth->copy()->addMonth()->format('Y-m')])}}" , class="month-button next-month">翌月</a>
+            <a href="{{route('staff-record.list', ['id' => $user->id, 'month' => $currentMonth->copy()->addMonth()->format('Y-m')])}}" , class="month-button next-month">翌月</a>
         </div>
         <table class="records__list__table">
             <thead>
@@ -49,7 +49,7 @@
                     <td>{{ $attendance?->total_work ? gmdate('H:i', $attendance->total_work * 60) : '' }}</td>
                     <td class="detail__link">
                         @if($attendance)
-                        <a href="{{ route('detail.record', $attendance->id) }}">詳細</a>
+                        <a href="{{ route('admin.detail.record', $attendance->id) }}">詳細</a>
                         @else
                         <span>詳細</span>
                         @endif

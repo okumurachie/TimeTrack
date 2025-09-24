@@ -1,0 +1,85 @@
+.records__list{
+    width: 60%;
+    margin: 100px auto 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.page-title{
+    padding: 2px 20px;
+    border-left: 8px solid #000000;
+    height: 40px;
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 40px;
+}
+
+.records__list__table{
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-sizing: border-box;
+}
+.records__list__table th,
+.records__list__table td {
+    border-bottom: 3px solid #e1e1e1;
+    padding: 8px 12px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #737373;
+    text-align: left;
+}
+.records__list__table th.status{
+    text-align: center;
+    padding-left: 20px;
+}
+.records__list__table td.status__td{
+    text-align: center;
+    padding-left: 20px;
+}
+.records__list__table th.detail{
+    padding-right: 20px;
+}
+.records__list__table td.detail__link{
+    padding-right: 20px;
+}
+.table__row{
+    width: 100%;
+    height: 40px;
+}
+.detail__link span{
+    color: #000000;
+}
+.detail__link a{
+    text-decoration: none;
+    color: #000000;
+    cursor: pointer;
+}
+
+.status__lists{
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    height: 47px;
+    padding-top: 20px;
+    border-bottom: 1px solid #000000;
+    margin-bottom: 40px;
+}
+.pending,
+.approved{
+    display: inline-block;
+    width: 155px;
+    height: 35px;
+    font-weight: 400;
+    font-size: 16px;
+    text-decoration: none;
+    color: #000000;
+    padding-left: 40px;
+    padding-bottom: 10px;
+    line-height: 35px;
+}
+.pending.active,
+.approved.active{
+    font-weight: 700;
+
+}

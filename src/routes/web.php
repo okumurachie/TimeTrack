@@ -37,10 +37,10 @@ Route::post('/admin/login', [AdminAuthenticatedSessionController::class, 'store'
 Route::prefix('admin')->middleware(['auth:admin'])->group(function () {
 
     Route::get('/attendance/list', [AdminAttendanceController::class, 'index'])->name('admin.attendances.index');
-    Route::get('/attendance/{id}', [AdminAttendanceController::class, 'detail'])->name('admin.detail.record');
+    Route::get('/attendance/{attendance}', [AdminAttendanceController::class, 'detail'])->name('admin.detail.record');
+    Route::patch('/attendance/{attendance}', [AdminAttendanceController::class, 'adminUpdate'])->name('admin.attendance.update');
     Route::get('/staff/list', [AdminAttendanceController::class, 'staffList'])->name('admin.staff.list');
     Route::get('/attendance/staff/{id}', [AdminAttendanceController::class, 'showStaffRecord'])->name('staff-record.list');
-    Route::get('/attendance/detail/{id}', [AdminAttendanceController::class, 'detail'])->name('admin.detail.record');
     Route::get('/stamp_correction_request/list', [CorrectionController::class, 'index'])->name('admin.correction.list');
     Route::post('/logout', [AdminAuthenticatedSessionController::class, 'destroy'])
         ->name('admin.logout');
@@ -58,7 +58,7 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('/attendance', [UserAttendanceController::class, 'index'])->name('attendance.index');
     Route::post('/attendance/stamp', [UserAttendanceController::class, 'stamp'])->name('attendance.stamp');
     Route::get('/attendance/list', [UserAttendanceController::class, 'showMyRecord'])->name('my-record.list');
-    Route::get('/attendance/detail/{id}', [UserAttendanceController::class, 'detail'])->name('detail.record');
+    Route::get('/attendance/detail/{id}', [UserAttendanceController::class, 'detail'])->name('user.detail.record');
     Route::post('/attendance/detail/{id}', [UserAttendanceController::class, 'store'])->name('attendance.request');
     Route::get('/stamp_correction_request/list', [CorrectionController::class, 'index'])->name('user.correction.list');
 });

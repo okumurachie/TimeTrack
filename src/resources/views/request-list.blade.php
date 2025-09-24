@@ -3,7 +3,7 @@
 @section('title', '申請一覧')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/records.css') }}">
+<link rel="stylesheet" href="{{ asset('css/request-list.css') }}">
 @endsection
 
 @section('content')
@@ -16,7 +16,7 @@
 
 <div class="app">
     <div class="records__list">
-        <h1 class="page-title">勤怠一覧</h1>
+        <h1 class="page-title">申請一覧</h1>
 
         <div class="status__lists">
             @if(Auth::guard('admin')->check())
@@ -43,7 +43,7 @@
             <tbody>
                 @forelse($corrections as $correction)
                 <tr class="table__row">
-                    <td>{{ $correction->status_label}}</td>
+                    <td class="status__td">{{ $correction->status_label}}</td>
                     <td>{{ $correction->user->name }}</td>
                     <td>{{ $correction->attendance->work_date->format('Y/m/d') }}</td>
                     <td>{{ $correction->reason }}</td>
@@ -52,7 +52,7 @@
                         @if(Auth::guard('admin')->check())
                         <a href="{{ route('admin.detail.record', $correction->attendance->id) }}">詳細</a>
                         @else
-                        <a href="{{ route('detail.record', $correction->attendance->id) }}">詳細</a>
+                        <a href="{{ route('user.detail.record', $correction->attendance->id) }}">詳細</a>
                         @endif
                     </td>
                 </tr>

@@ -49,7 +49,7 @@
                     <td>{{ $attendance?->total_work ? gmdate('H:i', $attendance->total_work * 60) : '' }}</td>
                     <td class="detail__link">
                         @if($attendance)
-                        <a href="{{ route('detail.record', $attendance->id) }}">詳細</a>
+                        <a href="{{ route('user.detail.record', $attendance->id) }}">詳細</a>
                         @else
                         <span>詳細</span>
                         @endif

@@ -28,7 +28,11 @@ class CorrectionController extends Controller
             $query->where('status', 'approved');
         }
 
-        $corrections = $query->latest()->get();
+        $query = $query
+            ->orderBy('user_id', 'asc')
+            ->orderBy('attendance_id', 'asc');
+
+        $corrections = $query->get();
 
         return view('request-list', compact('tab', 'corrections'));
     }
