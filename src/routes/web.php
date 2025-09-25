@@ -19,10 +19,6 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
-
 
 // 管理者ログイン画面
 Route::get('/admin/login', [AdminAuthenticatedSessionController::class, 'create'])

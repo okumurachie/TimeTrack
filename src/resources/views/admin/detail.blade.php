@@ -47,7 +47,8 @@
                                 <input type="text" name="clock_out" class="clock_out" value="{{ old('clock_out', optional($attendance?->clock_out)->format('H:i')) }}">
                             </div>
                             <div class="form__error">
-                                @error('clock_in'){{ $message }}@enderror
+                                @error('clock_in')<div>{{ $message }}</div>@enderror
+                                @error('clock_out')<div>{{ $message }}</div>@enderror
                             </div>
                         </div>
                     </td>

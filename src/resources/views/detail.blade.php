@@ -47,6 +47,7 @@
                             </div>
                             <div class="form__error">
                                 @error('clock_in'){{ $message }}@enderror
+                                @error('clock_out')<div>{{ $message }}</div>@enderror
                             </div>
                         </div>
                     </td>
