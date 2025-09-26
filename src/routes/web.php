@@ -38,6 +38,8 @@ Route::prefix('admin')->middleware(['auth:admin'])->group(function () {
     Route::get('/staff/list', [AdminAttendanceController::class, 'staffList'])->name('admin.staff.list');
     Route::get('/attendance/staff/{id}', [AdminAttendanceController::class, 'showStaffRecord'])->name('staff-record.list');
     Route::get('/stamp_correction_request/list', [CorrectionController::class, 'index'])->name('admin.correction.list');
+    Route::get('/stamp_correction_request/approve/{attendance_correct_request}', [CorrectionController::class, 'show'])->name('correction.approval.show');
+    Route::post('/stamp_correction_request/approve/{attendance_correct_request}', [CorrectionController::class, 'approve'])->name('correction.approval');
     Route::post('/logout', [AdminAuthenticatedSessionController::class, 'destroy'])
         ->name('admin.logout');
 });

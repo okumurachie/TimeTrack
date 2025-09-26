@@ -12,22 +12,23 @@ use App\Models\Correction;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Support\Facades\DB;
 
 class AttendanceController extends Controller
 {
     public function index(Request $request)
     {
         $users = User::all();
-        $today = Carbon::now()->toJapaneseDate();
         $date = $request->query('date', now()->toDateString());
         $workDate = Carbon::parse($date);
+        $workDateLabel = Carbon::parse($date)->toJapaneseDate();
 
         $attendances = Attendance::whereDate('work_date', $workDate)
             ->get()
             ->keyBy('user_id');
 
         $hasAttendance = $attendances->isNotEmpty();
-        return view('admin.index', compact('users', 'today', 'workDate', 'attendances', 'hasAttendance'));
+        return view('admin.index', compact('users', 'workDateLabel', 'workDate', 'attendances', 'hasAttendance'));
     }
 
     public function staffList(Request $request)
@@ -77,55 +78,57 @@ class AttendanceController extends Controller
 
     public function adminUpdate(CorrectionRequest $request, $id)
     {
-        $attendance = Attendance::with('breakTimes')->findOrFail($id);
+        DB::transaction(function () use ($request, $id) {
+            $attendance = Attendance::with('breakTimes')->findOrFail($id);
 
-        $attendance->clock_in = $request->input('clock_in');
-        $attendance->clock_out = $request->input('clock_out');
+            $attendance->clock_in = $request->input('clock_in');
+            $attendance->clock_out = $request->input('clock_out');
 
-        $attendance->breakTimes()->delete();
-        $date = $attendance->work_date->toDateString();
+            $attendance->breakTimes()->delete();
+            $date = $attendance->work_date->toDateString();
 
-        foreach ($request->input('breaks', []) as $break) {
-            if (!empty($break['start']) || !empty($break['end'])) {
-                $attendance->breakTimes()->create([
-                    'break_start' => $date . ' ' . $break['start'] . ':00',
-                    'break_end' => $date . ' ' . $break['end'] . ':00',
-                ]);
+            foreach ($request->input('breaks', []) as $break) {
+                if (!empty($break['start']) || !empty($break['end'])) {
+                    $attendance->breakTimes()->create([
+                        'break_start' => $date . ' ' . $break['start'] . ':00',
+                        'break_end' => $date . ' ' . $break['end'] . ':00',
+                    ]);
+                }
             }
-        }
 
-        $clockIn = $attendance->clock_in ? Carbon::parse($attendance->clock_in) : null;
-        $clockOut = $attendance->clock_out ? Carbon::parse($attendance->clock_out) :  null;
+            $attendance->load('breakTimes');
+            $clockIn = $attendance->clock_in ? Carbon::parse($attendance->clock_in) : null;
+            $clockOut = $attendance->clock_out ? Carbon::parse($attendance->clock_out) :  null;
 
-        $workMinutes = ($clockIn && $clockOut) ? $clockIn->diffInMinutes($clockOut) : 0;
-        $breakMinutes = $attendance->breakTimes->sum(function ($break) {
-            $start = $break->break_start ? Carbon::parse($break->break_start) : null;
-            $end = $break->break_end ? Carbon::parse($break->break_end) : null;
-            return ($start && $end) ? $start->diffInMinutes($end) : 0;
+            $workMinutes = ($clockIn && $clockOut) ? $clockIn->diffInMinutes($clockOut) : 0;
+            $breakMinutes = $attendance->breakTimes->sum(function ($break) {
+                $start = $break->break_start ? Carbon::parse($break->break_start) : null;
+                $end = $break->break_end ? Carbon::parse($break->break_end) : null;
+                return ($start && $end) ? $start->diffInMinutes($end) : 0;
+            });
+
+            $changes = [
+                'clock_in' => $request->input('clock_in'),
+                'clock_out' => $request->input('clock_out'),
+                'breaks' => $request->input('breaks', []),
+            ];
+
+            $attendance->update([
+                'clock_in'  => $clockIn,
+                'clock_out' => $clockOut,
+                'total_work' => max(0, $workMinutes - $breakMinutes),
+                'total_break' => $breakMinutes,
+            ]);
+
+            Correction::create([
+                'attendance_id' => $attendance->id,
+                'user_id' => $attendance->user->id,
+                'admin_id' => auth('admin')->id(),
+                'reason' => $request->input('reason'),
+                'status' => 'approved',
+                'changes' => $changes,
+            ]);
         });
-
-        $changes = [
-            'clock_in' => $request->input('clock_in'),
-            'clock_out' => $request->input('clock_out'),
-            'breaks' => $request->input('breaks', []),
-        ];
-
-        $attendance->update([
-            'clock_in'  => $clockIn,
-            'clock_out' => $clockOut,
-            'total_work' => max(0, $workMinutes - $breakMinutes),
-            'total_break' => $breakMinutes,
-        ]);
-
-        Correction::create([
-            'attendance_id' => $attendance->id,
-            'user_id' => $attendance->user->id,
-            'admin_id' => auth('admin')->id(),
-            'reason' => $request->input('reason'),
-            'status' => 'approved',
-            'changes' => $changes,
-        ]);
-
-        return redirect()->route('admin.detail.record', $attendance->id);
+        return redirect()->route('admin.detail.record', $id);
     }
 }

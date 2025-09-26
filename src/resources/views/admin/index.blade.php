@@ -13,7 +13,7 @@
 <div class="app">
     <div class="attendances__list">
 
-        <h1 class="page-title">{{$today}}の勤怠</h1>
+        <h1 class="page-title">{{$workDateLabel}}の勤怠</h1>
 
         <div class="date-navigation">
             <a href="{{route('admin.attendances.index', ['date' => $workDate->copy()->subDay()->format('Y-m-d')])}}" , class="date-button last-day">前日</a>

@@ -140,7 +140,7 @@ class AttendanceController extends Controller
             'breaks' => $request->input('breaks', []),
         ];
 
-        $correction = Correction::create([
+        Correction::create([
             'attendance_id' => $attendance->id,
             'user_id' => $user->id,
             'status' => 'pending',
@@ -151,6 +151,6 @@ class AttendanceController extends Controller
 
         $attendance->update(['has_request' => true]);
 
-        return redirect()->route('detail.record', $attendance->id);
+        return redirect()->route('user.detail.record', $attendance->id);
     }
 }

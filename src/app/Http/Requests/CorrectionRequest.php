@@ -38,6 +38,8 @@ class CorrectionRequest extends FormRequest
     public function messages()
     {
         return [
+            'clock_in.required' => '出勤時間を入力してください',
+            'clock_out.required' => '退勤時間を入力してください',
             'clock_in.regex'       => '出勤時間は "HH:mm"(半角数字)形式で入力してください',
             'clock_out.regex'      => '退勤時間は "HH:mm"(半角数字)形式で入力してください',
             'breaks.*.start.regex' => '休憩開始時間は "HH:mm"(半角数字)形式で入力してください',
