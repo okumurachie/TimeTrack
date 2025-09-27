@@ -50,7 +50,7 @@
                     <td>{{ $correction->created_at->format('Y/m/d') }}</td>
                     <td class="detail__link">
                         @if(Auth::guard('admin')->check())
-                        <a href="{{ route('admin.detail.record', $correction->attendance->id) }}">詳細</a>
+                        <a href="{{ route('correction.approval.show', $correction->id) }}">詳細</a>
                         @else
                         <a href="{{ route('user.detail.record', $correction->attendance->id) }}">詳細</a>
                         @endif

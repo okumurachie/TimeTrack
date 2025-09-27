@@ -119,3 +119,27 @@ textarea{
     display: flex;
     flex-direction:column;
 }
+
+.approve-page input,
+.approve-page textarea {
+    border: none;
+    background: transparent;
+    pointer-events: none;
+    resize: none;
+}
+.approve-page textarea {
+    padding-left: 30px;
+    padding-top: 30px;
+}
+
+.approved{
+    width: 130px;
+    height: 50px;
+    background-color: #696969;
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 700;
+    text-align: center;
+    line-height: 50px;
+    border-radius: 5px;
+}

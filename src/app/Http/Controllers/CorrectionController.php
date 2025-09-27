@@ -38,17 +38,15 @@ class CorrectionController extends Controller
         return view('request-list', compact('tab', 'corrections'));
     }
 
-    public function show(Request $request, $id)
+    public function show(Request $request, Correction $attendance_correct_request)
     {
-        $correction = Correction::findOrFile($id);
+        $correction = $attendance_correct_request->load(['attendance', 'user']);
         $user = $correction->user;
         $attendance = $correction->attendance;
         $changes = $correction->changes;
         $date = $request->query('date', $attendance->work_date->toDateString());
         $workDate = Carbon::parse($date);
-        $breakTimes = BreakTime::where('attendance_id', $attendance->id)->get();
-        $latestCorrection = $attendance->corrections()->latest()->first();
 
-        return view('admin.approve.', compact('correction', 'user', 'attendance', 'changes', 'date', 'workDate', 'breakTimes', 'latestCorrection'));
+        return view('admin.approve', compact('correction', 'user', 'attendance', 'changes', 'date', 'workDate'));
     }
 }
