@@ -92,6 +92,7 @@ textarea{
     width: 302px;
     height: 72px;
     padding: 8px 10px;
+    resize: none;
 }
 
 .form__button{
