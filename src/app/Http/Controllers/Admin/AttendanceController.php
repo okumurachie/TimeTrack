@@ -118,6 +118,7 @@ class AttendanceController extends Controller
                 'clock_out' => $clockOut,
                 'total_work' => max(0, $workMinutes - $breakMinutes),
                 'total_break' => $breakMinutes,
+                'has_request' => true,
             ]);
 
             Correction::create([

@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\BreakTime;
 use App\Models\Correction;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class CorrectionController extends Controller
@@ -48,5 +49,51 @@ class CorrectionController extends Controller
         $workDate = Carbon::parse($date);
 
         return view('admin.approve', compact('correction', 'user', 'attendance', 'changes', 'date', 'workDate'));
+    }
+
+    public function approve(Correction $attendance_correct_request)
+    {
+        DB::transaction(function () use ($attendance_correct_request) {
+            $correction = $attendance_correct_request->load(['attendance', 'user']);
+
+            $changes = $correction->changes;
+            $attendance = $correction->attendance;
+
+            $clockIn = !empty($changes['clock_in']) ? Carbon::parse($changes['clock_in']) : $attendance->clock_in;
+            $clockOut = !empty($changes['clock_out']) ? Carbon::parse($changes['clock_out']) : $attendance->clock_out;
+
+            if (!empty($changes['breaks'])) {
+                $attendance->breakTimes()->delete();
+
+                $breaks = collect($changes['breaks'])->map(function ($break) use ($attendance) {
+                    $workDate = Carbon::parse($attendance->work_date);
+                    return [
+                        'break_start' => !empty($break['start']) ? $workDate->copy()->setTimeFromTimeString($break['start']) : null,
+                        'break_end' => !empty($break['end']) ? $workDate->copy()->setTimeFromTimeString($break['end']) : null,
+                    ];
+                })->toArray();
+
+                $attendance->breakTimes()->createMany($breaks);
+                $attendance->load('breakTimes');
+            }
+
+            $workMinutes = ($clockIn && $clockOut) ? $clockIn->diffInMinutes($clockOut) : 0;
+
+            $breakMinutes = $attendance->breakTimes->sum(function ($break) {
+                $start = $break->break_start ? Carbon::parse($break->break_start) : null;
+                $end = $break->break_end ? Carbon::parse($break->break_end) : null;
+                return ($start && $end) ? $start->diffInMinutes($end) : 0;
+            });
+
+            $attendance->update([
+                'clock_in' => $clockIn,
+                'clock_out' => $clockOut,
+                'total_work' => max(0, $workMinutes - $breakMinutes),
+                'total_break' => $breakMinutes,
+            ]);
+
+            $correction->update(['status' => 'approved']);
+        });
+        return redirect()->route('correction.approval.show', $attendance_correct_request->id);
     }
 }
