@@ -56,6 +56,8 @@ class AttendanceDataSeeder extends Seeder
                 foreach ($pastAttendances->random(min(5, $pastAttendances->count())) as $attendance) {
                     $statuses = ['pending', 'approved'];
                     $reasons = ['遅延のため', '早退のため', '打刻漏れのため'];
+                    $adminIds = [1, 2];
+                    $status = $statuses[array_rand($statuses)];
 
                     $changes = [
                         'clock_in' => optional($attendance->clock_in)->copy()->addMinutes(rand(5, 15))->format('H:i'),
@@ -69,9 +71,10 @@ class AttendanceDataSeeder extends Seeder
                     Correction::create([
                         'attendance_id' => $attendance->id,
                         'user_id' => $user->id,
-                        'status' => $statuses[array_rand($statuses)],
+                        'status' => $status,
                         'reason' => $reasons[array_rand($reasons)],
                         'changes' => $changes,
+                        'admin_id' => $status === 'approved' ? $adminIds[array_rand($adminIds)] : null,
                     ]);
 
                     $attendance->update(['has_request' => true]);

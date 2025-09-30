@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AttendanceController extends Controller
 {
@@ -62,6 +63,38 @@ class AttendanceController extends Controller
         $dates = CarbonPeriod::create($startOfMonth, $endOfMonth);
 
         return view('admin.staff-records', compact('user', 'dates', 'attendancesByDate', 'hasAttendance', 'currentMonth'));
+    }
+
+    public function export(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+        $month = $request->query('month', Carbon::now()->format('Y-m'));
+        try {
+            $currentMonth = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
+        } catch (\Exception $e) {
+            $currentMonth = Carbon::now()->startOfMonth();
+        }
+
+        $startOfMonth = $currentMonth->copy()->startOfMonth();
+        $endOfMonth = $currentMonth->copy()->endOfMonth();
+
+        $attendances = Attendance::where('user_id', $user->id)
+            ->whereBetween('work_date', [$startOfMonth, $endOfMonth])
+            ->orderBy('work_date')
+            ->get();
+
+        $csvHeader = ['日付', '出勤', '退勤', '休憩', '合計', '備考',];
+        $csvData = $attendances->map(function ($attendance) use ($user) {
+            return [
+                $user->id,
+                $user->name,
+                $attendance->work_date,
+                $attendance->clock_in,
+                $attendance->clock_out,
+                $attendance->total_break,
+                $attendance->total_work,
+            ];
+        });
     }
 
     public function detail(Request $request, Attendance $attendance)
