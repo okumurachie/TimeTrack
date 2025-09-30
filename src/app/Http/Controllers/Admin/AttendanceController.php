@@ -80,13 +80,12 @@ class AttendanceController extends Controller
     {
         DB::transaction(function () use ($request, $id) {
             $attendance = Attendance::with('breakTimes')->findOrFail($id);
-
-            $attendance->clock_in = $request->input('clock_in');
-            $attendance->clock_out = $request->input('clock_out');
-
-            $attendance->breakTimes()->delete();
             $date = $attendance->work_date->toDateString();
 
+            $clockIn = $request->input('clock_in') ? Carbon::parse($date . ' ' . $request->input('clock_in')) : null;
+            $clockOut = $request->input('clock_out') ? Carbon::parse($date . ' ' . $request->input('clock_out')) : null;
+
+            $attendance->breakTimes()->delete();
             foreach ($request->input('breaks', []) as $break) {
                 if (!empty($break['start']) || !empty($break['end'])) {
                     $attendance->breakTimes()->create([
@@ -97,8 +96,7 @@ class AttendanceController extends Controller
             }
 
             $attendance->load('breakTimes');
-            $clockIn = $attendance->clock_in ? Carbon::parse($attendance->clock_in) : null;
-            $clockOut = $attendance->clock_out ? Carbon::parse($attendance->clock_out) :  null;
+
 
             $workMinutes = ($clockIn && $clockOut) ? $clockIn->diffInMinutes($clockOut) : 0;
             $breakMinutes = $attendance->breakTimes->sum(function ($break) {

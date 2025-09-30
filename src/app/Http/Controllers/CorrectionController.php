@@ -58,9 +58,10 @@ class CorrectionController extends Controller
 
             $changes = $correction->changes;
             $attendance = $correction->attendance;
+            $date = $attendance->work_date->toDateString();
 
-            $clockIn = !empty($changes['clock_in']) ? Carbon::parse($changes['clock_in']) : $attendance->clock_in;
-            $clockOut = !empty($changes['clock_out']) ? Carbon::parse($changes['clock_out']) : $attendance->clock_out;
+            $clockIn = !empty($changes['clock_in']) ? Carbon::parse($date . ' ' . $changes['clock_in']) : $attendance->clock_in;
+            $clockOut = !empty($changes['clock_out']) ? Carbon::parse($date . ' ' . $changes['clock_out']) : $attendance->clock_out;
 
             if (!empty($changes['breaks'])) {
                 $attendance->breakTimes()->delete();
@@ -92,7 +93,10 @@ class CorrectionController extends Controller
                 'total_break' => $breakMinutes,
             ]);
 
-            $correction->update(['status' => 'approved']);
+            $correction->update([
+                'admin_id' => auth('admin')->id(),
+                'status' => 'approved'
+            ]);
         });
         return redirect()->route('correction.approval.show', $attendance_correct_request->id);
     }

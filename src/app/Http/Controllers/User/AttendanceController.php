@@ -128,7 +128,25 @@ class AttendanceController extends Controller
         $breakTimes = BreakTime::where('attendance_id', $attendance->id)->get();
         $latestCorrection = $attendance->corrections()->latest()->first();
 
-        return view('detail', compact('user', 'attendance', 'workDate', 'breakTimes', 'latestCorrection'));
+        $latestChanges = null;
+        if ($latestCorrection) {
+            $latestChanges = is_string($latestCorrection->changes)
+                ? json_decode($latestCorrection->changes, true) ?? []
+                : ($latestCorrection->changes ?? []);
+        }
+
+        if (!empty($latestChanges['breaks'])) {
+            $breaks = $latestChanges['breaks'];
+        } else {
+            $breaks = $breakTimes->map(function ($break) {
+                return [
+                    'start' => $break->break_start ? Carbon::parse($break->break_start)->format('H:i') : '',
+                    'end' => $break->break_end ? Carbon::parse($break->break_end)->format('H:i') : '',
+                ];
+            })->toArray();
+        }
+
+        return view('detail', compact('user', 'attendance', 'workDate', 'breakTimes', 'latestCorrection', 'latestChanges', 'breaks'));
     }
     public function store(CorrectionRequest $request, $id)
     {
@@ -146,7 +164,6 @@ class AttendanceController extends Controller
             'status' => 'pending',
             'reason' => $request->input('reason'),
             'changes' => $changes,
-
         ]);
 
         $attendance->update(['has_request' => true]);
