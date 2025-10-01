@@ -59,6 +59,13 @@
                 @endif
             </tbody>
         </table>
+
+        <form class="export-csv" method="POST" action="{{ route('admin.export',$user->id) }}">
+            @csrf
+            <input type="hidden" name="id" value="{{ $user->id }}">
+            <input type="hidden" name="month" value="{{ $currentMonth->format('Y-m') }}">
+            <button type="submit" class="export__button">CSV出力</button>
+        </form>
     </div>
 </div>
 @endsection

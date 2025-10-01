@@ -40,7 +40,7 @@ Route::prefix('admin')->middleware(['auth:admin'])->group(function () {
     Route::get('/stamp_correction_request/list', [CorrectionController::class, 'index'])->name('admin.correction.list');
     Route::get('/stamp_correction_request/approve/{attendance_correct_request}', [CorrectionController::class, 'show'])->name('correction.approval.show');
     Route::post('/stamp_correction_request/approve/{attendance_correct_request}', [CorrectionController::class, 'approve'])->name('correction.approval');
-    Route::post('/export', [AdminAttendanceController::class, 'export'])->name('admin.export');
+    Route::post('/export/{id}', [AdminAttendanceController::class, 'export'])->name('admin.export');
     Route::post('/logout', [AdminAuthenticatedSessionController::class, 'destroy'])
         ->name('admin.logout');
 });

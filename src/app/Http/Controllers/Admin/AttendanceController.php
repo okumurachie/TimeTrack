@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Support\Facades\Date;
 
 class AttendanceController extends Controller
 {
@@ -83,18 +84,32 @@ class AttendanceController extends Controller
             ->orderBy('work_date')
             ->get();
 
-        $csvHeader = ['日付', '出勤', '退勤', '休憩', '合計', '備考',];
-        $csvData = $attendances->map(function ($attendance) use ($user) {
-            return [
-                $user->id,
-                $user->name,
-                $attendance->work_date,
-                $attendance->clock_in,
-                $attendance->clock_out,
-                $attendance->total_break,
-                $attendance->total_work,
-            ];
+        $filename = "{$user->name}_{$month}_attendance.csv";
+
+        $response = new StreamedResponse(function () use ($attendances, $user, $currentMonth) {
+            $createCsvFile = fopen('php://output', 'w');
+
+            stream_filter_prepend($createCsvFile, 'convert.iconv.utf-8/cp932//TRANSLIT');
+
+            fputcsv($createCsvFile, [$user->name . ' ' . $currentMonth->format('Y年n月') . '勤怠一覧']);
+            fputcsv($createCsvFile, ['日付', '出勤', '退勤', '休憩', '合計']);
+
+            foreach ($attendances as $attendance) {
+                fputcsv($createCsvFile, [
+                    $attendance->work_date->format('m/d') . '(' . $attendance->work_date->isoFormat('ddd') . ')',
+                    optional($attendance->clock_in)?->format('H:i'),
+                    optional($attendance->clock_out)?->format('H:i'),
+                    $attendance->total_break ? gmdate('H:i', $attendance->total_break * 60) : '',
+                    $attendance->total_work ? gmdate('H:i', $attendance->total_work * 60) : '',
+                ]);
+            }
+            fclose($createCsvFile);
         });
+
+        $response->headers->set('Content-Type', 'text/csv');
+        $response->headers->set('Content-Disposition', "attachment: filename={$filename}");
+
+        return $response;
     }
 
     public function detail(Request $request, Attendance $attendance)
