@@ -68,8 +68,12 @@ class AttendanceController extends Controller
 
     public function export(Request $request, $id)
     {
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+
         $user = User::findOrFail($id);
-        $month = $request->query('month', Carbon::now()->format('Y-m'));
+        $month = $request->input('month', Carbon::now()->format('Y-m'));
         try {
             $currentMonth = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
         } catch (\Exception $e) {
@@ -85,29 +89,46 @@ class AttendanceController extends Controller
             ->get();
 
         $filename = "{$user->name}_{$month}_attendance.csv";
+        $asciiFilename = preg_replace('/[^\x20-\x7e]/', '_', $filename);
 
-        $response = new StreamedResponse(function () use ($attendances, $user, $currentMonth) {
+        $response = new StreamedResponse(function () use ($attendances, $user, $currentMonth, $startOfMonth, $endOfMonth) {
             $createCsvFile = fopen('php://output', 'w');
 
             stream_filter_prepend($createCsvFile, 'convert.iconv.utf-8/cp932//TRANSLIT');
 
             fputcsv($createCsvFile, [$user->name . ' ' . $currentMonth->format('Y年n月') . '勤怠一覧']);
+
+            if ($attendances->isEmpty()) {
+                fputcsv($createCsvFile, ['この月の勤怠データはありません']);
+                fclose($createCsvFile);
+                return;
+            }
+
             fputcsv($createCsvFile, ['日付', '出勤', '退勤', '休憩', '合計']);
 
-            foreach ($attendances as $attendance) {
+            $attendanceByDate = $attendances->keyBy(fn($attendance) => $attendance->work_date->toDateString());
+
+            $date = $startOfMonth->copy();
+            while ($date->lte($endOfMonth)) {
+                $attendance = $attendanceByDate->get($date->toDateString());
+
                 fputcsv($createCsvFile, [
-                    $attendance->work_date->format('m/d') . '(' . $attendance->work_date->isoFormat('ddd') . ')',
-                    optional($attendance->clock_in)?->format('H:i'),
-                    optional($attendance->clock_out)?->format('H:i'),
-                    $attendance->total_break ? gmdate('H:i', $attendance->total_break * 60) : '',
-                    $attendance->total_work ? gmdate('H:i', $attendance->total_work * 60) : '',
+                    $date->format('m/d') . '(' . $date->isoFormat('ddd') . ')',
+                    optional($attendance?->clock_in)?->format('H:i') ?: '',
+                    optional($attendance?->clock_out)?->format('H:i') ?: '',
+                    $attendance && $attendance->total_break ? gmdate('H:i', $attendance->total_break * 60) : '',
+                    $attendance && $attendance->total_work ? gmdate('H:i', $attendance->total_work * 60) : '',
                 ]);
+
+                $date->addDay();
             }
+
             fclose($createCsvFile);
         });
 
-        $response->headers->set('Content-Type', 'text/csv');
-        $response->headers->set('Content-Disposition', "attachment: filename={$filename}");
+        $response->headers->set('Content-Type', 'text/csv; charset=Shift_JIS');
+        $disposition = "attachment; filename=\"{$asciiFilename}\"; filename*=UTF-8''" . rawurlencode($filename);
+        $response->headers->set('Content-Disposition', $disposition);
 
         return $response;
     }
