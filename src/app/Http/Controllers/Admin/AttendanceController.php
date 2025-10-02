@@ -46,7 +46,7 @@ class AttendanceController extends Controller
         $month = $request->query('month', Carbon::now()->format('Y-m'));
         try {
             $currentMonth = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
-        } catch (\Exception $e) {
+        } catch (\Exception $error) {
             $currentMonth = Carbon::now()->startOfMonth();
         }
 
@@ -76,7 +76,7 @@ class AttendanceController extends Controller
         $month = $request->input('month', Carbon::now()->format('Y-m'));
         try {
             $currentMonth = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
-        } catch (\Exception $e) {
+        } catch (\Exception $error) {
             $currentMonth = Carbon::now()->startOfMonth();
         }
 

@@ -14,7 +14,7 @@
 <div class="verify-email__content">
     <div class="message">
         <p>登録していただいたメールアドレスに認証メールを送付しました。</p>
-        <p>メール認証を完了してください</p>
+        <p>メール認証を完了してください。</p>
     </div>
     <div class="sent-message">
         <a href="http://localhost:8025" class="verify-email__link">
