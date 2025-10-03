@@ -31,11 +31,10 @@ Route::post('/admin/login', [AdminAuthenticatedSessionController::class, 'store'
 
 // 管理者専用ルート
 Route::prefix('admin')->middleware(['auth:admin'])->group(function () {
-
-    Route::get('/attendance/list', [AdminAttendanceController::class, 'index'])->name('admin.attendances.index');
+    Route::get('/attendances', [AdminAttendanceController::class, 'index'])->name('admin.attendances.index');
     Route::get('/attendance/{attendance}', [AdminAttendanceController::class, 'detail'])->name('admin.detail.record');
     Route::patch('/attendance/{attendance}', [AdminAttendanceController::class, 'adminUpdate'])->name('admin.attendance.update');
-    Route::get('/staff/list', [AdminAttendanceController::class, 'staffList'])->name('admin.staff.list');
+    Route::get('/users', [AdminAttendanceController::class, 'staffList'])->name('admin.staff.list');
     Route::get('/attendance/staff/{id}', [AdminAttendanceController::class, 'showStaffRecord'])->name('staff-record.list');
     Route::get('/stamp_correction_request/list', [CorrectionController::class, 'index'])->name('admin.correction.list');
     Route::get('/stamp_correction_request/approve/{attendance_correct_request}', [CorrectionController::class, 'show'])->name('correction.approval.show');
