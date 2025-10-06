@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Carbon\Carbon;
+use Tests\HasInDatabase;
+use Illuminate\Testing\Constraints\HasInDatabase as BaseHasInDatabase;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -12,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(BaseHasInDatabase::class, HasInDatabase::class);
     }
 
     /**
