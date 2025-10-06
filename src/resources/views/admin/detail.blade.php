@@ -109,7 +109,7 @@
                     <td>
                         <label class="input__label">備考</label>
                         <div class="textarea__space">
-                            <textarea name="reason">{{old('reason', $attendance->reason)}}</textarea>
+                            <textarea name="reason">{{old('reason', $latestCorrection->reason)}}</textarea>
                             <div class="form__error">
                                 @error('reason')
                                 {{ $message }}
