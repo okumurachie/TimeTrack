@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\URL;
 use Symfony\Component\DomCrawler\Crawler;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -144,33 +145,40 @@ class RegisterTest extends TestCase
 
     public function test_register_email_verification_shows_navigation_and_redirects_authentication_page()
     {
-        Notification::fake();
 
         $user = User::factory()->create(['email_verified_at' => null]);
-
-        // 3. ユーザーに明示的にメール認証通知を送信
-        // これで Notification::assertSentTo が失敗しなくなる
-        $user->sendEmailVerificationNotification();
-
-        // 4. メール認証ページにアクセス（認証案内ページの確認）
         $response = $this->actingAs($user)->get('/email/verify');
         $response->assertStatus(200);
         $response->assertSee('認証はこちらから');
 
-        $user->sendEmailVerificationNotification();
+        $crawler = new Crawler($response->getContent());
 
-        // Notification が送信されたか確認しつつリンクも取得
-        Notification::assertSentTo($user, VerifyEmail::class, function ($notification, $channels) use ($user) {
-            $verificationUrl = (string) $notification->toMail($user)->actionUrl;
+        $link = $crawler->filter('a.verify-email__link')->attr('href');
 
-            // ドメイン部分を除き Laravel 内のルートだけに変換
-            $path = parse_url($verificationUrl, PHP_URL_PATH);
+        $this->assertSame('http://localhost:8025', $link);
+    }
 
-            // テスト用リクエスト
-            $response = $this->get($path);
-            $response->assertStatus(200);
+    public function test_email_verification_link_opens_and_redirects_to_attendance_page()
+    {
+        Notification::fake();
 
-            return true;
-        });
+        $user = User::factory()->create(['email_verified_at' => null]);
+
+        $verificationUrl = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            [
+                'id' => $user->getKey(),
+                'hash' => sha1($user->getEmailForVerification()),
+            ]
+        );
+
+        $response = $this->actingAs($user)->get($verificationUrl);
+        $response->assertRedirect(route('attendance.index'));
+
+        $final = $this->actingAs($user)->followingRedirects()->get($verificationUrl);
+        $final->assertStatus(200);
+
+        $this->assertTrue($user->fresh()->hasVerifiedEmail());
     }
 }
