@@ -89,6 +89,7 @@
 .good-job{
     width: 100%;
     text-align: center;
+    padding-left: 20px;
     font-size: 26px;
     font-weight: 700;
 }

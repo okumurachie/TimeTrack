@@ -55,7 +55,7 @@
             @endif
 
             @if($todayAttendance && $todayAttendance->clock_out)
-            <p class="good-job">お疲れ様でした</p>
+            <p class="good-job">お疲れ様でした。</p>
             @endif
         </div>
 
