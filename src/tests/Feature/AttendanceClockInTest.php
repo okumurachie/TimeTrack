@@ -20,7 +20,10 @@ class AttendanceClockInTest extends TestCase
         $user = User::factory()->create();
         $response = $this->actingAs($user)->get(route('attendance.index'));
         $response->assertStatus(200);
-        $response->assertSee('出勤');
+        $response->assertSee('勤務外');
+        $crawler = new Crawler($response->getContent());
+        $this->assertCount(1, $crawler->filter('button:contains("出勤")'));
+
 
         $response = $this->post(route('attendance.stamp'), [
             'action' => 'clock_in',
