@@ -3,16 +3,13 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Artisan;
 use Database\Seeders\UsersTableSeeder;
 use Database\Seeders\AdminsTableSeeder;
 use Database\Seeders\AttendanceDataSeeder;
 use App\Models\User;
 use App\Models\Attendance;
-use App\Models\Correction;
 use App\Models\BreakTime;
-use Carbon\Carbon;
 use Tests\TestCase;
 
 class UserAttendanceDetailTest extends TestCase
