@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Database\Seeders\UsersTableSeeder;
 use Database\Seeders\AdminsTableSeeder;
 use Database\Seeders\AttendanceDataSeeder;
@@ -13,6 +13,7 @@ use App\Models\Admin;
 use App\Models\Attendance;
 use App\Models\Correction;
 use App\Models\BreakTime;
+use Carbon\Carbon;
 use Tests\TestCase;
 
 class UserCorrectionRequestTest extends TestCase
@@ -26,7 +27,13 @@ class UserCorrectionRequestTest extends TestCase
     {
         parent::setUp();
 
-        Artisan::call('config:clear');
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('users')->truncate();
+        DB::table('admins')->truncate();
+        DB::table('attendances')->truncate();
+        DB::table('break_times')->truncate();
+        DB::table('corrections')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $this->seed(UsersTableSeeder::class);
         $this->seed(AdminsTableSeeder::class);
@@ -162,6 +169,8 @@ class UserCorrectionRequestTest extends TestCase
         ];
 
         $postData = [
+            'attendance_id' => $this->attendance->id,
+            'user_id' => $this->user->id,
             'clock_in' => '09:10',
             'clock_out' => '18:10',
             'breaks' => $breaks,
@@ -177,22 +186,129 @@ class UserCorrectionRequestTest extends TestCase
             'user_id' => $this->user->id,
             'status' => 'pending',
             'reason' => '電車遅延のため',
-            'changes' => $postData,
         ]);
 
         $response->assertRedirect(route('user.detail.record', $this->attendance->id));
 
-        $correction = Correction::where('attendance_id', $this->attendance->id)
-            ->first();
-        $response = $this->actingAs($admin)->get(route('admin.correction.list'));
+        $correction = Correction::where('attendance_id', $this->attendance->id)->first();
+        $this->assertEquals('09:10', $correction->changes['clock_in']);
+        $this->assertEquals('18:10', $correction->changes['clock_out']);
+        $this->assertEquals([
+            ['start' => '12:30', 'end' => '13:30'],
+        ], $correction->changes['breaks']);
+
+        $response = $this->actingAs($admin, 'admin')->get(route('admin.correction.list'));
+
         $response->assertStatus(200);
         $response->assertSee('申請一覧');
         $response->assertSee('承認待ち');
-        $response->assertSee($user->name);
-        $response->assertSee($this->attendance->work_date->format('Y/m/d'));
+        $response->assertSee($correction->user->name);
+        $response->assertSee($correction->attendance->work_date->format('Y/m/d'));
+        $response->assertSee($correction->reason);
+        $response->assertSee($correction->created_at->format('Y/m/d'));
 
+        $response = $this->actingAs($admin, 'admin')->get(route('correction.approval.show', $correction->id));
 
+        $date = $correction->attendance->work_date->toDateString();
+        $workDate = Carbon::parse($date);
 
-        $response->actingAs($admin)->get(route('correction.approval.show'))
+        $response->assertStatus(200);
+        $response->assertSee('勤怠詳細');
+        $response->assertSee($this->user->name);
+        $response->assertSee($workDate->format('Y年'));
+        $response->assertSee($workDate->format('n月j日'));
+        $response->assertSee($correction->reason);
+    }
+
+    public function test_user_can_view_all_their_pending_approval_requests()
+    {
+        $response = $this->actingAs($this->user)->get(route('user.detail.record', $this->attendance->id));
+        $response->assertStatus(200);
+        $response->assertSee('勤怠詳細');
+
+        $breaks = [
+            ['start' => '12:30', 'end' => '13:30'],
+        ];
+
+        $postData = [
+            'attendance_id' => $this->attendance->id,
+            'user_id' => $this->user->id,
+            'clock_in' => '09:10',
+            'clock_out' => '18:10',
+            'breaks' => $breaks,
+            'reason' => '電車遅延のため',
+        ];
+
+        $response = $this->post(
+            route('attendance.request', $this->attendance->id),
+            $postData
+        );
+
+        $this->assertDatabaseHas('corrections', [
+            'attendance_id' => $this->attendance->id,
+            'user_id' => $this->user->id,
+            'status' => 'pending',
+            'reason' => '電車遅延のため',
+        ]);
+
+        $corrections = Correction::where('user_id', $this->user->id)
+            ->where('status', 'pending')
+            ->get();
+
+        $response = $this->actingAs($this->user)->get(route('user.correction.list', ['tab' => 'pending']));
+
+        foreach ($corrections as $correction) {
+            $response->assertSee('承認待ち');
+            $response->assertSee($this->user->name);
+            $response->assertSee($correction->attendance->work_date->format('Y/m/d'));
+            $response->assertSee($correction->reason);
+            $response->assertSee($correction->created_at->format('Y/m/d'));
+        }
+    }
+
+    public function test_user_can_view_all_their_approved_requests()
+    {
+        $response = $this->actingAs($this->user)->get(route('user.detail.record', $this->attendance->id));
+        $response->assertStatus(200);
+        $response->assertSee('勤怠詳細');
+
+        $breaks = [
+            ['start' => '12:30', 'end' => '13:30'],
+        ];
+
+        $postData = [
+            'attendance_id' => $this->attendance->id,
+            'user_id' => $this->user->id,
+            'clock_in' => '09:10',
+            'clock_out' => '18:10',
+            'breaks' => $breaks,
+            'reason' => '電車遅延のため',
+        ];
+
+        $response = $this->post(
+            route('attendance.request', $this->attendance->id),
+            $postData
+        );
+
+        $this->assertDatabaseHas('corrections', [
+            'attendance_id' => $this->attendance->id,
+            'user_id' => $this->user->id,
+            'status' => 'pending',
+            'reason' => '電車遅延のため',
+        ]);
+
+        $corrections = Correction::where('user_id', $this->user->id)
+            ->where('status', 'approved')
+            ->get();
+
+        $response = $this->actingAs($this->user)->get(route('user.correction.list', ['tab' => 'approved']));
+
+        foreach ($corrections as $correction) {
+            $response->assertSee('承認済み');
+            $response->assertSee($this->user->name);
+            $response->assertSee($correction->attendance->work_date->format('Y/m/d'));
+            $response->assertSee($correction->reason);
+            $response->assertSee($correction->created_at->format('Y/m/d'));
+        }
     }
 }
