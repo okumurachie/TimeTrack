@@ -311,4 +311,52 @@ class UserCorrectionRequestTest extends TestCase
             $response->assertSee($correction->created_at->format('Y/m/d'));
         }
     }
+
+    public function test_user_can_navigate_to_attendance_detail_from_request_list()
+    {
+        $response = $this->actingAs($this->user)->get(route('user.detail.record', $this->attendance->id));
+        $response->assertStatus(200);
+        $response->assertSee('勤怠詳細');
+
+        $breaks = [
+            ['start' => '12:30', 'end' => '13:30'],
+        ];
+
+        $postData = [
+            'attendance_id' => $this->attendance->id,
+            'user_id' => $this->user->id,
+            'clock_in' => '09:10',
+            'clock_out' => '18:10',
+            'breaks' => $breaks,
+            'reason' => '電車遅延のため',
+        ];
+
+        $response = $this->post(
+            route('attendance.request', $this->attendance->id),
+            $postData
+        );
+
+        $this->assertDatabaseHas('corrections', [
+            'attendance_id' => $this->attendance->id,
+            'user_id' => $this->user->id,
+            'status' => 'pending',
+            'reason' => '電車遅延のため',
+        ]);
+
+        $correction = $this->attendance->corrections()->latest()->first();
+
+        $response = $this->actingAs($this->user)->get(route('user.correction.list'));
+        $response->assertStatus(200);
+        $response->assertSee('詳細');
+
+        $response = $this->actingAs($this->user)->get(route('user.detail.record', $correction->attendance->id));
+        $response->assertStatus(200);
+        $response->assertSee('勤怠詳細');
+        $response->assertSee($this->user->name);
+        $response->assertSee($correction->attendance->work_date->format('Y年'));
+        $response->assertSee($correction->attendance->work_date->format('n月j日'));
+        $response->assertSee('09:10');
+        $response->assertSee('18:10');
+        $response->assertSee('電車遅延のため');
+    }
 }

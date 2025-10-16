@@ -106,10 +106,7 @@
                     <td>
                         <label class="input__label">備考</label>
                         <div class="textarea__space">
-                            @php
-                            $reasonValue = $latestCorrection->reason ?? '';
-                            @endphp
-                            <textarea name="reason" @if($isPending) readonly @endif>{{ old('reason', $reasonValue) }}</textarea>
+                            <textarea name="reason" @if($isPending) readonly @endif>{{ old('reason', $latestCorrection?->reason ?? '') }}</textarea>
                             <div class="form__error">
                                 @error('reason') <div>{{ $message }}</div> @enderror
                             </div>
