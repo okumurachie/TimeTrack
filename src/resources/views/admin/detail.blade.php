@@ -37,14 +37,19 @@
                         </div>
                     </td>
                 </tr>
+
+                @php
+                $isPending = $latestCorrection && ($latestCorrection->status === 'pending');
+                @endphp
+
                 <tr class="table__row">
                     <td>
                         <label class="input__label">出勤・退勤</label>
                         <div class="input__space">
                             <div class="input__group">
-                                <input type="text" name="clock_in" class="clock_in" value="{{ old('clock_in', optional($attendance?->clock_in)->format('H:i')) }}">
+                                <input type="text" name="clock_in" class="clock_in" value="{{ old('clock_in', optional($attendance?->clock_in)->format('H:i')) }}" @if($isPending) readonly @endif>
                                 <span class="tilde-mark">〜</span>
-                                <input type="text" name="clock_out" class="clock_out" value="{{ old('clock_out', optional($attendance?->clock_out)->format('H:i')) }}">
+                                <input type="text" name="clock_out" class="clock_out" value="{{ old('clock_out', optional($attendance?->clock_out)->format('H:i')) }}" @if($isPending) readonly @endif>
                             </div>
                             <div class="form__error">
                                 @error('clock_in')<div>{{ $message }}</div>@enderror
@@ -67,9 +72,9 @@
                         </label>
                         <div class="input__space">
                             <div class="input__group">
-                                <input id="breaks-{{ $i }}-start" type="text" name="breaks[{{ $i }}][start]" class="clock_in" value="{{$startValue}}">
+                                <input id="breaks-{{ $i }}-start" type="text" name="breaks[{{ $i }}][start]" class="clock_in" value="{{$startValue}}" @if($isPending) readonly @endif>
                                 <span class="tilde-mark" aria-hidden="true">〜</span>
-                                <input id="breaks-{{ $i }}-end" type="text" name="breaks[{{ $i }}][end]" class="clock_out" value="{{$endValue}}">
+                                <input id="breaks-{{ $i }}-end" type="text" name="breaks[{{ $i }}][end]" class="clock_out" value="{{$endValue}}" @if($isPending) readonly @endif>
                             </div>
                             <div class="form__error">
                                 @foreach([$startKey,$endKey] as $key)
@@ -82,6 +87,8 @@
                     </td>
                 </tr>
                 @endforeach
+
+                @unless($isPending)
                 <tr class="table__row">
                     <td>
                         <label class="input__label">休憩{{$breakTimes->count() + 1 }}</label>
@@ -104,12 +111,13 @@
                         </div>
                     </td>
                 </tr>
+                @endunless
 
                 <tr class="table__row">
                     <td>
                         <label class="input__label">備考</label>
                         <div class="textarea__space">
-                            <textarea name="reason">{{old('reason', $latestCorrection?->reason ?? '')}}</textarea>
+                            <textarea name="reason" @if($isPending) readonly @endif>{{old('reason', $latestCorrection?->reason ?? '')}}</textarea>
                             <div class="form__error">
                                 @error('reason')
                                 {{ $message }}
@@ -120,7 +128,7 @@
                 </tr>
             </table>
             <div class="form__button">
-                @if($latestCorrection && $latestCorrection->status === 'pending')
+                @if($isPending)
                 <p class="pending">*承認待ちのため修正はできません。</p>
                 @else
                 <button class="form__button__submit">修正</button>
