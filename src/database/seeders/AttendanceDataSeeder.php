@@ -27,7 +27,7 @@ class AttendanceDataSeeder extends Seeder
 
                 $attendances = collect();
                 for ($date = $start->copy(); $date->lessThanOrEqualTo($end); $date->addDay()) {
-                    if ($date->isWeekday() && !$date->isToday()) {
+                    if ($date->isWeekday() && (app()->environment('testing') || !$date->isToday())) {
 
                         $dateString = $date->toDateString();
 
