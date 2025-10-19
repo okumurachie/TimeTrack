@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\Attendance;
 use App\Models\BreakTime;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Tests\TestCase;
 
 class AdminUserAttendanceViewTest extends TestCase
@@ -53,6 +54,7 @@ class AdminUserAttendanceViewTest extends TestCase
     public function test_admin_can_view_attendances_on_selected_user_attendance_list()
     {
         $user = User::find(1);
+        $month = Carbon::now()->format('Y/m');
         $startOfMonth = Carbon::now()->startOfMonth();
         $endOfMonth = Carbon::now()->endOfMonth();
 
@@ -63,11 +65,46 @@ class AdminUserAttendanceViewTest extends TestCase
 
         $response = $this->actingAs($this->admin, 'admin')->get(route('staff-record.list', $user->id));
         $response->assertStatus(200);
-        $response->assertSee('スタッフ一覧');
+        $response->assertSee($month);
         $response->assertSee("{$user->name}さんの勤怠");
 
         foreach ($attendances as $attendance) {
-            $response->assertSee($attendance->work_date->format('m/d') . '(' . $attendance->work_date->isoFormat('ddd') . ')');
+            $workDate = Carbon::parse($attendance->work_date);
+            $response->assertSee($workDate->format('m/d') . '(' . $workDate->isoFormat('ddd') . ')');
+            $response->assertSee($attendance?->clock_in?->format('H:i') ?? '');
+            $response->assertSee($attendance?->clock_out?->format('H:i') ?? '');
+            $response->assertSee($attendance?->total_break ? gmdate('H:i', $attendance->total_break * 60) : '');
+            $response->assertSee($attendance?->total_work ? gmdate('H:i', $attendance->total_work * 60) : '');
+        }
+    }
+
+    public function test_admin_can_view_previous_month_attendances_on_selected_user_attendance_list()
+    {
+        $user = User::find(1);
+        $month = Carbon::now()->format('Y/m');
+        $currentMonth = Carbon::now()->startOfMonth()->startOfMonth();
+
+        $previousMonth = $currentMonth->copy()->subMonth()->startOfMonth();
+        $previousMonthStart = $currentMonth->copy()->subMonth()->startOfMonth();
+        $previousMonthEnd = $currentMonth->copy()->subMonth()->endOfMonth();
+
+        $attendances = Attendance::where('user_id', $user->id)
+            ->whereBetween('work_date', [$previousMonthStart, $previousMonthEnd])
+            ->get();
+
+        $response = $this->actingAs($this->admin, 'admin')->get(route('staff-record.list', $user->id));
+        $response->assertStatus(200);
+        $response->assertSee($month);
+        $response->assertSee("{$user->name}さんの勤怠");
+
+        $response = $this->actingAs($this->admin, 'admin')->get(route('staff-record.list', $user->id) . '?month=' . $previousMonth->format('Y-m'));
+        $response->assertStatus(200);
+        $response->assertSee($previousMonth->format('Y/m'));
+        $response->assertSee("{$user->name}さんの勤怠");
+
+        foreach ($attendances as $attendance) {
+            $workDate = Carbon::parse($attendance->work_date);
+            $response->assertSee($workDate->format('m/d') . '(' . $workDate->isoFormat('ddd') . ')');
             $response->assertSee($attendance?->clock_in?->format('H:i') ?? '');
             $response->assertSee($attendance?->clock_out?->format('H:i') ?? '');
             $response->assertSee($attendance?->total_break ? gmdate('H:i', $attendance->total_break * 60) : '');
