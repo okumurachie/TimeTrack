@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Foundation\Testing\WithFaker;
 use Database\Seeders\UsersTableSeeder;
 use Database\Seeders\AdminsTableSeeder;
 use Database\Seeders\AttendanceDataSeeder;
@@ -13,7 +12,6 @@ use App\Models\User;
 use App\Models\Attendance;
 use App\Models\BreakTime;
 use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 use Tests\TestCase;
 
 class AdminUserAttendanceViewTest extends TestCase
@@ -149,7 +147,6 @@ class AdminUserAttendanceViewTest extends TestCase
     public function test_admin_can_view_selected_user_attendance_detail_from_list()
     {
         $user = User::find(1);
-        $month = Carbon::now()->format('Y/m');
         $startOfMonth = Carbon::now()->startOfMonth();
         $endOfMonth = Carbon::now()->endOfMonth();
         $attendance = Attendance::where('user_id', $user->id)
