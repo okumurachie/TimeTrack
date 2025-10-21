@@ -10,9 +10,7 @@ use Tests\TestCase;
 class AttendanceDateTimeTest extends TestCase
 {
     use RefreshDatabase;
-    /**
-     * A basic feature test example.
-     */
+
     public function test_attendance_page_displays_current_datetime()
     {
         $user = User::factory()->create();

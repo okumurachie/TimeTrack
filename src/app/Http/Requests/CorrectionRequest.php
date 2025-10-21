@@ -52,12 +52,29 @@ class CorrectionRequest extends FormRequest
     {
         $validator->after(function ($validator) {
 
+            $breaks = $this->input('breaks') ?? [];
+
+            if (count($breaks) > 1) {
+                $firstStart = $breaks[0]['start'] ?? '';
+                $firstEnd = $breaks[0]['end'] ?? '';
+                $hasSecondFilled = false;
+                foreach ($breaks as $i => $break) {
+                    if ($i > 0 && (!empty($break['start']) || !empty($break['end']))) {
+                        $hasSecondFilled = true;
+                        break;
+                    }
+                }
+                if (empty($firstStart) && empty($firstEnd) && $hasSecondFilled) {
+                    $validator->errors()->add('breaks.0.start', '1つ目の休憩が空欄の場合、2つ目以降も入力できません');
+                }
+            }
+
             $fields = [
                 'clock_in' => $this->input('clock_in'),
                 'clock_out' => $this->input('clock_out'),
             ];
 
-            foreach ($this->input('breaks') ?? [] as $i => $break) {
+            foreach ($breaks as $i => $break) {
                 $fields["breaks.$i.start"] = $break['start'] ?? '';
                 $fields["breaks.$i.end"] = $break['end'] ?? '';
             }
@@ -70,7 +87,7 @@ class CorrectionRequest extends FormRequest
 
             $clockIn = $this->input('clock_in');
             $clockOut = $this->input('clock_out');
-            $breaks = $this->input('breaks') ?? [];
+
 
             $in = preg_match('/^\d{2}:\d{2}$/', $clockIn) ? Carbon::createFromFormat('H:i', $clockIn) : null;
             $out = preg_match('/^\d{2}:\d{2}$/', $clockOut) ? Carbon::createFromFormat('H:i', $clockOut) : null;
@@ -80,6 +97,13 @@ class CorrectionRequest extends FormRequest
             }
 
             foreach ($breaks as $i => $break) {
+                $startFilled = !empty($break['start']);
+                $endFilled = !empty($break['end']);
+
+                if (($startFilled && !$endFilled) || (!$startFilled && $endFilled)) {
+                    $validator->errors()->add("breaks.$i.start", '休憩開始・終了は両方入力してください');
+                }
+
                 $start = preg_match('/^\d{2}:\d{2}$/', $break['start'] ?? '') ? Carbon::createFromFormat('H:i', $break['start']) : null;
                 $end   = preg_match('/^\d{2}:\d{2}$/', $break['end'] ?? '')   ? Carbon::createFromFormat('H:i', $break['end'])   : null;
 
