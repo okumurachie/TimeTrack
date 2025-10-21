@@ -35,7 +35,7 @@
         </div>
         <div class="datetime">
             <input type="text" class="todays-date" value="{{ now()->isoFormat('YYYY年MM月DD日(dd)') }}" readonly>
-            <input type="text" class="current-time" value="{{ now()->format('H:i') }}" readonly>
+            <input type="text" class="current-time" id="currentTime" readonly>
         </div>
 
         <div class="stamping__buttons">
@@ -61,4 +61,16 @@
 
     </form>
 </div>
+
+<script>
+    function updateCurrentTime() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        document.getElementById('currentTime').value = `${hours}:${minutes}`;
+    }
+    updateCurrentTime();
+    setInterval(updateCurrentTime, 1000);
+</script>
+
 @endsection

@@ -20,6 +20,9 @@ class AttendanceDateTimeTest extends TestCase
         $response = $this->actingAs($user)->get(route('attendance.index'));
         $response->assertStatus(200);
         $response->assertSee(now()->isoFormat('YYYY年MM月DD日(dd)'));
-        $response->assertSee(now()->format('H:i'));
+        $response->assertSee('id="currentTime"', false);
+        $response->assertSee('class="current-time"', false);
+        $response->assertSee('function updateCurrentTime()', false);
+        $response->assertSee('setInterval(updateCurrentTime, 1000);', false);
     }
 }
