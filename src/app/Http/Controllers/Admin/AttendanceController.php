@@ -156,21 +156,22 @@ class AttendanceController extends Controller
 
             $attendance->breakTimes()->delete();
 
-            $breaks = collect($request->input('breaks', []))
-                ->filter(function($break){
-                    return !empty($break['start'] && $break['end']);
+            $correctionBreaks = collect($request->input('breaks', []))
+                ->filter(function($break) {
+                    return is_array($break) && !empty($break['start']) && !empty($break['end']);
                 })
-                ->map(function ($break) use ($date){
+                ->values();
+
+            $breaksForDB = $correctionBreaks->map(function ($break) use ($date){
                     return[
                         'break_start' => $date . ' ' . $break['start'] . ':00',
                         'break_end' => $date . ' ' . $break['end'] . ':00',
                     ];
                 })
-                ->values()
                 ->toArray();
-            
-                if(!empty($breaks)){
-                    $attendance->breakTimes()->createMany($breaks);
+
+                if(!empty($breaksForDB)){
+                    $attendance->breakTimes()->createMany($breaksForDB);
                 }
 
             $attendance->load('breakTimes');
@@ -185,7 +186,12 @@ class AttendanceController extends Controller
             $changes = [
                 'clock_in' => $request->input('clock_in'),
                 'clock_out' => $request->input('clock_out'),
-                'breaks' => $breaks,
+                'breaks' => $correctionBreaks->map(function ($break){
+                    return[
+                        'start' => $break['start'],
+                        'end'   => $break['end'],
+                    ];
+                })->toArray(),
             ];
 
             $attendance->update([

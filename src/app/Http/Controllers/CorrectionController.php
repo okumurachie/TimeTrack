@@ -51,7 +51,10 @@ class CorrectionController extends Controller
         if(!empty($changes['breaks']) && is_array($changes['breaks'])){
             $changes['breaks'] = collect($changes['breaks'])
             ->filter(function($break){
-                return !empty($break['start'] || !empty($break['end']));
+                return is_array($break) && (
+                    (!empty($break['start'] ?? null)) ||
+                    (!empty($break['end'] ?? null))
+                );
             })
             ->values()
             ->toArray();
