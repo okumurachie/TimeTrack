@@ -133,17 +133,35 @@ class AttendanceController extends Controller
             $latestChanges = is_string($latestCorrection->changes)
                 ? json_decode($latestCorrection->changes, true) ?? []
                 : ($latestCorrection->changes ?? []);
+            if(!empty($latestChanges['breaks'])){
+                $latestChanges['breaks'] = collect($latestChanges['breaks'])
+                ->filter(function($break){
+                    return !empty($break['start']) && !empty($break['end']);
+                })
+                ->values()
+                ->toArray();
+
+                if(empty($latestChanges['breaks'])){
+                    unset($latestChanges['breaks']);
+                }
+            }
         }
 
         if (!empty($latestChanges['breaks'])) {
             $breaks = $latestChanges['breaks'];
         } else {
-            $breaks = $breakTimes->map(function ($break) {
-                return [
-                    'start' => $break->break_start ? Carbon::parse($break->break_start)->format('H:i') : '',
-                    'end' => $break->break_end ? Carbon::parse($break->break_end)->format('H:i') : '',
-                ];
-            })->toArray();
+            $breaks = $breakTimes
+                ->filter(function($break){
+                    return !empty($break->break_start) && !empty($break->break_end);
+                })
+                ->map(function ($break) {
+                    return [
+                        'start' => $break->break_start ? Carbon::parse($break->break_start)->format('H:i') : '',
+                        'end' => $break->break_end ? Carbon::parse($break->break_end)->format('H:i') : '',
+                    ];
+                })
+                ->values()
+                ->toArray();
         }
 
         return view('detail', compact('user', 'attendance', 'workDate', 'breakTimes', 'latestCorrection', 'latestChanges', 'breaks'));

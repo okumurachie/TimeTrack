@@ -72,9 +72,15 @@ class CorrectionController extends Controller
                         'break_start' => !empty($break['start']) ? $workDate->copy()->setTimeFromTimeString($break['start']) : null,
                         'break_end' => !empty($break['end']) ? $workDate->copy()->setTimeFromTimeString($break['end']) : null,
                     ];
-                })->toArray();
-
+                })
+                ->filter(function($break){
+                    return !empty($break['break_start']) && !empty($break['break_end']);
+                })
+                ->values()
+                ->toArray();
+                if(!empty($breaks)){
                 $attendance->breakTimes()->createMany($breaks);
+                }
                 $attendance->load('breakTimes');
             }
 

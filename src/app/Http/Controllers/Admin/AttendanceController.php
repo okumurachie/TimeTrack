@@ -155,17 +155,25 @@ class AttendanceController extends Controller
             $clockOut = $request->input('clock_out') ? Carbon::parse($date . ' ' . $request->input('clock_out')) : null;
 
             $attendance->breakTimes()->delete();
-            foreach ($request->input('breaks', []) as $break) {
-                if (!empty($break['start']) || !empty($break['end'])) {
-                    $attendance->breakTimes()->create([
+
+            $breaks = collect($request->input('breaks', []))
+                ->filter(function($break){
+                    return !empty($break['start'] && $break['end']);
+                })
+                ->map(function ($break) use ($date){
+                    return[
                         'break_start' => $date . ' ' . $break['start'] . ':00',
                         'break_end' => $date . ' ' . $break['end'] . ':00',
-                    ]);
+                    ];
+                })
+                ->values()
+                ->toArray();
+            
+                if(!empty($breaks)){
+                    $attendance->breakTimes()->createMany($breaks);
                 }
-            }
 
             $attendance->load('breakTimes');
-
 
             $workMinutes = ($clockIn && $clockOut) ? $clockIn->diffInMinutes($clockOut) : 0;
             $breakMinutes = $attendance->breakTimes->sum(function ($break) {
@@ -177,7 +185,7 @@ class AttendanceController extends Controller
             $changes = [
                 'clock_in' => $request->input('clock_in'),
                 'clock_out' => $request->input('clock_out'),
-                'breaks' => $request->input('breaks', []),
+                'breaks' => $breaks,
             ];
 
             $attendance->update([
