@@ -62,18 +62,6 @@
                     </td>
                 </tr>
                 @endforeach
-                <tr class="table__row">
-                    <td>
-                        <label class="input__label">休憩{{ count($changes['breaks'] ?? []) + 1 }}</label>
-                        <div class="input__space">
-                            <div class="input__group">
-                                <input type="text" class="clock_in" name="breaks[{{ count($changes['breaks'] ?? []) }}][start]" value="" readonly>
-                                <span class="tilde-mark" aria-hidden="true">〜</span>
-                                <input type="text" class="clock_out" name="breaks[{{ count($changes['breaks'] ?? []) }}][end]" value="" readonly>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
 
                 <tr class="table__row">
                     <td>

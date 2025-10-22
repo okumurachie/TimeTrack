@@ -48,6 +48,15 @@ class CorrectionController extends Controller
         $date = $request->query('date', $attendance->work_date->toDateString());
         $workDate = Carbon::parse($date);
 
+        if(!empty($changes['breaks']) && is_array($changes['breaks'])){
+            $changes['breaks'] = collect($changes['breaks'])
+            ->filter(function($break){
+                return !empty($break['start'] || !empty($break['end']));
+            })
+            ->values()
+            ->toArray();
+        }
+
         return view('admin.approve', compact('correction', 'user', 'attendance', 'changes', 'date', 'workDate'));
     }
 
