@@ -98,3 +98,26 @@
     color: #ff333f;
     margin-top: 8px;
 }
+
+@media (min-width: 851px) and (max-width: 890px) {
+    .header__logo {
+        width: 25vw;
+    }
+}
+@media (min-width: 768px) and (max-width: 890px) {
+    .datetime{
+    width: 60%;
+    }
+
+    .todays-date{
+    width: 80%;
+    font-size: 24px;
+    font-weight: 400;
+    padding-left: 30px;
+    }
+
+    .current-time{
+    font-size: 70px;
+    font-weight: 700;
+    }
+}

@@ -17,4 +17,9 @@ class Admin extends Authenticatable
         'email',
         'password',
     ];
+
+    public function corrections()
+    {
+        return $this->hasMany(Correction::class);
+    }
 }

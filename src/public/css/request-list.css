@@ -84,3 +84,14 @@
     font-weight: 700;
 
 }
+
+@media (min-width: 768px) and (max-width: 1162px) {
+    .records__list__table th,
+    .records__list__table td {
+        padding: 4px 8px;
+        font-size: 10px;
+        font-weight: 700;
+        color: #737373;
+        text-align: left;
+    }
+    }

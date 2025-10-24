@@ -120,3 +120,22 @@
     color: #000000;
     cursor: pointer;
 }
+@media (min-width: 768px) and (max-width: 975px) {
+    .attendances__list{
+        width: 90%;
+    }
+    .header__logo {
+        width: 25vw;
+    }
+    .header__nav{
+        width: 60vw;
+        display: flex;
+        padding-right: 10px;
+    }
+    .header__nav li{
+        font-size: 18px;
+    }
+    .header__logout{
+        font-size: 18px;
+    }
+}

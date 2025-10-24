@@ -151,7 +151,7 @@ textarea{
         padding: 5px 30px;
         display: flex;
         flex-direction: row;
-        gap: 28px;
+        gap: 25px;
     }
     .input__label{
         width: 20%;
@@ -170,5 +170,22 @@ textarea{
         height: 72px;
         padding: 8px 10px;
         resize: none;
+    }
+}
+    @media (min-width: 768px) and (max-width: 975px) {
+    .header__logo {
+        width: 25vw;
+    }
+    .header__nav{
+        width: 70vw;
+        display: flex;
+        padding-left: 30px;
+        padding-right: 10px;
+    }
+    .header__nav li{
+        font-size: 18px;
+    }
+    .header__logout{
+        font-size: 18px;
     }
 }
